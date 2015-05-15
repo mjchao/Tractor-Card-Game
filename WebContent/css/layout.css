@@ -1,0 +1,182 @@
+#pnlMain {
+	width: 1000px;
+	height: 600px;
+	background-color: lightblue;
+}
+
+#pnlMain>div {
+	overflow: hidden;
+}
+
+.hPanel {
+	position: relative;
+	width: 750px;
+	height: 125px;
+	left: 125px;
+	background-color: blue;
+}
+
+.hHand {
+	position: absolute;
+	height: 96px;
+	background-color: pink;
+}
+
+#pnlNorth {
+	top: 0px;
+}
+
+#pnlHandN {
+	top: 10px;
+}
+
+
+#pnlSouth {
+	top: 325px;
+	left: 0px;
+	width: 1000px;
+	height: 150px;
+}
+
+#pnlHandS {
+	top: 50px;
+}
+
+.vPanel {
+	position: relative;
+	width: 125px;
+	height: 450px;
+	background-color: red;
+}
+
+.vHand {
+	position: absolute;
+	width: 96px;
+}
+
+
+#pnlEast {
+	top: -275px;
+	left: 875px;
+}
+
+#pnlHandE {
+	left: 25px;
+}
+
+#pnlWest {
+	top: -725px;
+	left: 0px;
+}
+
+#pnlHandW {
+	left: 10px;
+	width: 96px;
+}
+
+#pnlCenter {
+	position: relative;
+	top: -1050px;
+	left: 125px;
+	width: 750px;
+	height: 325px;
+	background-color: green;
+}
+
+.hCard {
+	position: absolute;
+	top: 0px;
+	left: 0px;
+}
+
+.vCard {
+	position: absolute;
+	top: 0px;
+	left: 0px;
+}
+
+.hSelectedCard {
+	position: absolute;
+	top: 0px;
+	left: 25px;
+}
+
+.vSelectedCard {
+	position: absolute;
+	top: -25px;
+	left: 0px;	
+}
+
+#pnlDeclare {
+	display: block;
+	position: relative;
+	left: 300px;
+}
+
+#pnlBottom {
+	position: relative;
+	top: -50px;
+	left: 475px;
+	width: 1000px;
+	height: 50px;
+	visibility: hidden;
+}
+
+#pnlPlay {
+	position: relative;
+	top: -100px;
+	left: 475px;
+	width: 1000px;
+	height: 50px;
+	visibility: hidden;
+}
+
+.declare {
+	width: 50px;
+	height: 50px;
+	border: 1px solid gray;
+	border-radius: 5px;
+	box-shadow: 1px 1px 1px 1px gray;
+	margin: 0px 5px 0px 5px;
+	background-color: yellow;
+}
+
+.declareDisabled {
+	width: 50px;
+	height: 50px;
+	border: none;
+	border-radius: 5px;
+	box-shadow: none;
+	margin: 0px 5px 0px 5px;
+}
+
+.commandDisabled {
+	width: 100px;
+	height: 50px;
+	border: none;
+	border-radius: 5px;
+	box-shadow: none;
+	margin: 0px 5px 0px 5px;
+}
+
+.command {
+	width: 100px;
+	height: 50px;
+	border: 1px solid gray;
+	border-radius: 5px;
+	box-shadow: 1px 1px 1px 1px gray;
+	margin: 0px 5px 0px 5px;
+	background-color: yellow;
+}
+
+.declare:hover , .command:hover {
+	box-shadow: 2px 2px 2px 2px gray;
+}
+
+.declare:active , .command:active {
+	box-shadow: none;
+}
+
+#cmdFlipBottom, #cmdFlipBottomNext {
+	visibility: hidden;
+}

@@ -125,7 +125,7 @@
 #pnlPlay {
 	position: relative;
 	top: -100px;
-	left: 475px;
+	left: 400px;
 	width: 1000px;
 	height: 50px;
 	visibility: hidden;
@@ -179,4 +179,25 @@
 
 #cmdFlipBottom, #cmdFlipBottomNext {
 	visibility: hidden;
+}
+
+#pnlNextRound {
+	position: relative;
+	top: -150px;
+	left: 450px;
+	visibility: hidden;
+}
+
+#pnlStats {
+	display: inline-block;
+	padding: 5px;
+}
+
+.defender {
+	font-size: 15pt;
+	font-weight: bold;
+}
+
+.leader {
+	color: lime;
 }

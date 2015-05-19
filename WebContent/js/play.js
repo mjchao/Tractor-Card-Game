@@ -1,4 +1,4 @@
-var round = new Round( 2 , "S" );
+var round = new Round( 2 , "N" );
 var pnlDeclare = document.getElementById( "pnlDeclare" );
 var pnlBottom = document.getElementById( "pnlBottom" );
 var pnlPlay = document.getElementById( "pnlPlay" );

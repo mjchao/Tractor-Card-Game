@@ -233,6 +233,22 @@ function Round( level , starter ) {
 		}
 	}
 	
+	this.renderDeclaredHands = function() {
+		this.handN.renderDeclaredOffsets( this.dealer.level , 
+													this.roundData.declared );
+		this.handS.renderDeclaredOffsets( this.dealer.level , 
+													this.roundData.declared );
+		this.handE.renderDeclaredOffsets( this.dealer.level , 
+													this.roundData.declared );
+		this.handW.renderDeclaredOffsets( this.dealer.level , 
+													this.roundData.declared );
+		
+		this.dispN.render( pnlNorth );
+		this.dispS.render( pnlSouth );
+		this.dispE.render( pnlEast );
+		this.dispW.render( pnlWest );
+	}
+	
 	this.deal = function() {
 		if ( !this.dealer.finished() ) {
 			this.dealer.deal();
@@ -242,19 +258,7 @@ function Round( level , starter ) {
 			this.dispW.render( pnlWest );
 		}
 		else {
-			this.handN.renderDeclaredOffsets( this.dealer.level , 
-														this.roundData.declared );
-			this.handS.renderDeclaredOffsets( this.dealer.level , 
-														this.roundData.declared );
-			this.handE.renderDeclaredOffsets( this.dealer.level , 
-														this.roundData.declared );
-			this.handW.renderDeclaredOffsets( this.dealer.level , 
-														this.roundData.declared );
-			
-			this.dispN.render( pnlNorth );
-			this.dispS.render( pnlSouth );
-			this.dispE.render( pnlEast );
-			this.dispW.render( pnlWest );
+			this.renderDeclaredHands();
 		}
 		this.updateDeclarationButtons( this.handS );
 	}
@@ -423,101 +427,6 @@ function Round( level , starter ) {
 }
 
 
-var round = new Round( 2 , "S" );
-var pnlDeclare = document.getElementById( "pnlDeclare" );
-var pnlBottom = document.getElementById( "pnlBottom" );
-var pnlPlay = document.getElementById( "pnlPlay" );
 
-function deal() {
-	round.deal();
-	//round.tryDeclare( "E" , 3 );
-	//round.tryDeclare( "N" , 3 );
-	//round.tryDeclare( "W" , 3 );
-	if ( round.dealer.finished() ) {
-		round.returnDeclaredCards();
-		
-		document.getElementById( "cmdDeal" ).setAttribute( 
-												"class" , "declareDisabled" );
-		
-		//deal one more time to render the declared offsets of the cards
-		//in reality, no additional cards will be dealt
-		round.deal();
-		
-		if ( round.roundData.isDeclared() ) {
-			processDealingComplete();
-		}
-		else {
-			document.getElementById( "cmdFlipBottom" ).style.visibility = 
-				"visible";
-		}
-	}
-}
-
-function processBottom() {
-	
-}
-
-function showBottomCommands() {
-	if ( round.dealer.finished() && round.roundData.isDeclared() ) {
-		document.getElementById( "cmdFlipBottomNext" ).style.visibility = 
-			"hidden";
-		if ( round.roundData.starter == "S" ) {
-			pnlBottom.style.visibility = "visible";
-		}
-		else {
-			pnlPlay.style.visibility = "visible";
-		}
-	}
-}
-
-function processDealingComplete() {
-	pnlDeclare.style.visibility = "hidden";
-	document.getElementById( "cmdFlipBottom" ).style.visibility = 
-		"hidden";
-	document.getElementById( "cmdFlipBottomNext" ).style.visibility = 
-		"visible";
-}
-
-function checkDealingComplete() {
-	if ( round.dealer.finished() ) {
-		processDealingComplete();
-	}
-}
-
-function flipSpades() {
-	round.tryDeclare( "S" , 4 );
-	checkDealingComplete();
-}
-
-function flipHearts() {
-	round.tryDeclare( "S" , 3 );
-	checkDealingComplete();
-}
-
-function flipClubs() {
-	round.tryDeclare( "S" , 2 );
-	checkDealingComplete();
-}
-
-function flipDiamonds() {
-	round.tryDeclare( "S" , 1 );
-	checkDealingComplete();
-}
-
-function flipNoTrump() {
-	round.tryDeclare( "S" , 6 );
-	checkDealingComplete();
-	round.tryDeclare( "S" , 5 );
-}
-document.getElementById( "cmdDeal" ).onclick = deal;
-document.getElementById( "cmdSpades" ).onclick = flipSpades;
-document.getElementById( "cmdHearts" ).onclick = flipHearts;
-document.getElementById( "cmdClubs" ).onclick = flipClubs;
-document.getElementById( "cmdDiamonds" ).onclick = flipDiamonds;
-document.getElementById( "cmdNoTrump" ).onclick = flipNoTrump;
-document.getElementById( "cmdFlipBottomNext" ).onclick = showBottomCommands;
-
-//TODO
-document.getElementById( "cmdFlipBottom" ).onclick = processDealingComplete;
 
 //*/

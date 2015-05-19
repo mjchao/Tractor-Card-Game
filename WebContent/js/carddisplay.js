@@ -121,6 +121,10 @@ function HandDisplay( hand , location ) {
 			panelTop = (centerHeight - handHeight)/2;
 			panelLeft = 5;
 		}
+		else if ( this.location == "C" ) {
+			panelTop = (centerHeight - handHeight)/2;
+			panelLeft = (centerWidth - handWidth)/2;
+		}
 		
 		this.panel.style.top = panelTop + "px";
 		this.panel.style.left = panelLeft + "px";

@@ -32,15 +32,16 @@ function Card( suit , value ) {
 		return rtn;
 	}
 	
-	this.toggleSelected = function() {
-		if ( thisCard.selected ) {
+	this.setSelected = function( bool ) {
+		thisCard.selected = bool;
+		
+		if ( !thisCard.selected ) {
 			if ( thisCard.vertical ) {
 				thisCard.faceImg.setAttribute( "class" , "vCard" );
 			}
 			else {
 				thisCard.faceImg.setAttribute( "class" , "hCard" );
 			}
-			thisCard.selected = false;
 		}
 		else {
 			if ( thisCard.vertical ) {
@@ -49,8 +50,11 @@ function Card( suit , value ) {
 			else {
 				thisCard.faceImg.setAttribute( "class" , "hSelectedCard" );
 			}
-			thisCard.selected = true;
 		}
+	}
+	
+	this.toggleSelected = function() {
+		thisCard.setSelected( !thisCard.selected );
 	}
 	
 	this.faceImg.onclick = function() {

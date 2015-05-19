@@ -52,6 +52,7 @@ function Dealer( north , south , east , west , bottom , start ) {
 		this.south.clear();
 		this.east.clear();
 		this.west.clear();
+		this.bottom.clear();
 		this.start = start;
 		
 		this.deck = new Deck();

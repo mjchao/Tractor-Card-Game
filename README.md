@@ -8,3 +8,4 @@ This card game is not too well known around the world. It is mainly played in Ch
 Rules
 ===
 
+For now, please see http://en.wikipedia.org/wiki/Sheng_Ji . (The Readme be updated when I get a chance.)

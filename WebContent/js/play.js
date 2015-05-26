@@ -1,10 +1,13 @@
-var round = new Round( 2 , "N" );
+var round = new Round( 2 , "S" );
 var pnlDeclare = document.getElementById( "pnlDeclare" );
 var pnlBottom = document.getElementById( "pnlBottom" );
 var pnlPlay = document.getElementById( "pnlPlay" );
 
 function deal() {
 	round.deal();
+	
+	//TODO AI makes declaration, if possible
+	
 	//round.tryDeclare( "E" , 3 );
 	//round.tryDeclare( "N" , 3 );
 	//round.tryDeclare( "W" , 3 );
@@ -204,6 +207,15 @@ function flipNoTrump() {
 	checkDealingComplete();
 	round.tryDeclare( "S" , 5 );
 }
+
+function playSelected() {
+	//TODO
+}
+
+function startNextTrick() {
+	//TODO
+}
+
 document.getElementById( "cmdDeal" ).onclick = deal;
 document.getElementById( "cmdSpades" ).onclick = flipSpades;
 document.getElementById( "cmdHearts" ).onclick = flipHearts;
@@ -213,3 +225,5 @@ document.getElementById( "cmdNoTrump" ).onclick = flipNoTrump;
 document.getElementById( "cmdFlipBottomNext" ).onclick = showBottomCommands;
 document.getElementById( "cmdFlipBottom" ).onclick = flipBottom;
 document.getElementById( "cmdBottom" ).onclick = processBottom;
+document.getElementById( "cmdPlayTrick" ).onclick = playSelected;
+document.getElementById( "cmdNextTrick" ).onclick = startNextTrick;

@@ -194,10 +194,10 @@
 }
 
 .defender {
-	font-size: 15pt;
-	font-weight: bold;
+	border: 1px solid black;
+	padding: 5px;
 }
 
 .leader {
-	color: lime;
+	font-weight: bold;
 }

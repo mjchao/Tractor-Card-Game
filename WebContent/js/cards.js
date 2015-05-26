@@ -224,6 +224,12 @@ function CardComparatorForHandsDeclared( level , declaredSuit ) {
 	}
 }
 
+function CardComparatorForHandsDeclaredIncr( level , declaredSuit ) {
+	this.compare = function( card1 , card2 ) {
+		return card1.compareToByDeclared( card2 , level , declaredSuit );
+	}
+}
+
 function getImageFileOfCard( card ) {
 	if ( card.visible ) {
 		var suit = card.suit;
@@ -312,6 +318,22 @@ function Hand( verticalCards , visible ) {
 	this.verticalCards = verticalCards;
 	this.visible = visible;
 	this.hand = new Array();
+	
+	this.clone = function() {
+		var rtn = new Hand( this.verticalCards , this.visible );
+		for ( var i=0 ; i<this.hand.length ; ++i ) {
+			rtn.addCard( this.hand[ i ] );
+		}
+		return rtn;
+	}
+	
+	this.deepClone = function() {
+		var rtn = new Hand( this.verticalCards , this.visible );
+		for ( var i=0 ; i<this.hand.length ; ++i ) {
+			rtn.addCard( this.hand[ i ].clone() );
+		}
+		return rtn;
+	}
 	
 	this.addCard = function( card ) {
 		this.hand[ this.hand.length ] = card;

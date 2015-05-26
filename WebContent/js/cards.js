@@ -335,6 +335,14 @@ function Hand( verticalCards , visible ) {
 		return rtn;
 	}
 	
+	this.subhand = function( start , end ) {
+		var rtn = new Hand( this.verticalCards , this.visible );
+		for ( var i=start ; i<end ; ++i ) {
+			rtn.addCard( this.hand[ i ] );
+		}
+		return rtn;
+	}
+	
 	this.addCard = function( card ) {
 		this.hand[ this.hand.length ] = card;
 	};
@@ -351,13 +359,17 @@ function Hand( verticalCards , visible ) {
 		this.hand = new Array();
 	}
 	
+	this.removeAt = function( idx ) {
+		for ( var i=idx+1 ; i<this.hand.length ; ++i ) {
+			this.hand[ i-1 ] = this.hand[ i ];
+		}
+		this.hand.pop();
+	}
+	
 	this.removeCard = function( card ) {
 		for ( var i=0 ; i<this.hand.length ; ++i ) {
 			if ( this.hand[ i ] == card ) {
-				for ( var j=i+1 ; j<this.hand.length ; ++j ) {
-					this.hand[ j-1 ] = this.hand[ j ];
-				}
-				this.hand.pop();
+				this.removeAt( i );
 				break;
 			}
 		}

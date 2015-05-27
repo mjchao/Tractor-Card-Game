@@ -5,13 +5,33 @@ Background
 
 This card game is not too well known around the world. It is mainly played in China. The Chinese name for this game literaly translates to "Tractor", hence its name.
 
+Tractor is played with two standard decks of cards with jokers. There are two teams of two people: north-south and east-west. There are thirteen *levels* corresponding to the thirteen card values: 2, 3, ... 10, J, Q, K, A. Both teams start at level 2 and want to be the first team to successfully pass level A. The team that finishes level A first wins.
+
 Rules
 ===
 
 For now, please see http://en.wikipedia.org/wiki/Sheng_Ji . (The Readme be updated when I get a chance.)
 
-##Overview
-Tractor is played with two standard decks of cards with jokers. There are two teams of two people: north-south and east-west. There are thirteen *levels* corresponding to the thirteen card values: 2, 3, ... 10, J, Q, K, A. Both teams start at level 2 and want to be the first team to successfully pass level A. The team that finishes level A first wins. 
+##Card Combinations
+There are three main card combinations: single, pair, tractor.
+
+###Single
+As it's name implies, a single consists of 1 card of any suit.
+
+###Pair
+A pair is a set of two cards with the same value and suit. For example, two As of spades form a pair.
+
+###Tractor
+A tractor is a set of pairs of consecutive values and of the same suit. For example, 2-2-3-3 all of spades form a tractor.
+
+###Following Combination and Suit
+In each trick, you must always follow the combination type and suit. For example, if the leader of the trick plays a pair of spades, you must play a pair of spades if possible. If you cannot follow the combination, you must follow the suit if possible. If you cannot follow the suit, you may play any cards you wish - you do not have to follow the combination type if you cannot follow the suit.
+
+##Card Rankings
+Within an individual suit, the rank of the cards from highest to lowest is A-K-Q-J-10-9-8-7-6-5-4-3-2. As beat everything else, Ks beat everything but As, etc. 
+
+###Dump
+If at any time you are certain that some set of cards you have when broken into individual combinations cannot be beaten, you may *dump* all of them at once. For example, if you have A-K-K of spades, you can dump them because A is the highest single card in its suit, and K-K is the highest 
 
 ##Rounds
 In order for a team to pass a level, it must successfully defend a *round* for that level. The defending team members are called the *defenders* and the other two players are called the *attackers*. To successfully defend a round, the defenders must prevent the attackers from scoring 80 points. The point scoring system will be explained shortly.

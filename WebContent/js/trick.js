@@ -146,50 +146,59 @@ function isTractor( hand , level , trumpSuit ) {
 }
 
 function removeSingleFrom( hand ) {
+	var rtn = new Hand();
 	for ( var i=0 ; i<hand.size() ; ++i ) {
 		if ( isSingle( hand.subhand( i , i+1 ) ) ) {
+			rtn.addCard( hand.get( i ) );
 			hand.removeAt( i );
-			return 1;
+			return rtn;
 		}
 	}
-	return 0;
+	return rtn;
 }
 
 function removePairFrom( hand ) {
+	var rtn = new Hand();
 	for ( var i=0 ; i<hand.size()-1 ; ++i ) {
 		if ( isPair( hand.subhand( i , i+2 ) ) ) {
+			rtn.addCard( hand.get( i ) );
 			hand.removeAt( i );
+			rtn.addCard( hand.get( i ) );
 			hand.removeAt( i );
-			return 2;
+			return rtn;
 		}
 	}
-	return 0;
+	return rtn;
 }
 
 function removeTractorFrom( hand ) {
+	var rtn = new Hand();
 	for ( var length=24 ; length >= 4 ; length -= 2 ) {
 		for ( var start=0 ; start+length <= hand.size() ; ++start ) {
 			if ( isTractor( hand.subhand( start , start+length ) ) ) {
 				for ( var i=0 ; i<length ; ++i ) {
+					rtn.addCard( hand.get( start ) );
 					hand.removeAt( start );
 				}
-				return length;
+				return rtn;
 			}
 		}
 	}
-	return 0;
+	return rtn;
 }
 
 function removeTractorLengthFrom( hand , length ) {
+	var rtn = new Hand();
 	for ( var start=0 ; start+length <= hand.size() ; ++start ) {
 		if ( isTractor( hand.subhand( start , start+length ) ) ) {
 			for ( var i=0 ; i<length ; ++i ) {
+				rtn.addCard( hand.get( start ) );
 				hand.removeAt( start );
 			}
-			return true;
+			return rtn;
 		}
 	}
-	return false;
+	return rtn;
 }
 
 function Trick( level , trumpSuit , firstHand ) {
@@ -243,52 +252,53 @@ function Trick( level , trumpSuit , firstHand ) {
 		}
 		if ( this.type == TrickTypes.TRACTOR ) {
 			var tractorLength = this.firstHand.size();
-			return removeTractorFrom( subhand.clone() ) >= tractorLength;
+			return removeTractorFrom( subhand.clone() ).size() >= tractorLength;
 		}
 		else if ( this.type == TrickTypes.PAIR ) {
-			return removePairFrom( subhand.clone() ) == 2;
+			return removePairFrom( subhand.clone() ).size() == 2;
 		}
 		else if ( this.type == TrickTypes.SINGLE ) {
-			return removeSingleFrom( subhand.clone() ) == 1;
+			return removeSingleFrom( subhand.clone() ).size() == 1;
 		}
 		else {
 			var firstHandClone = this.firstHand.clone();
 			
 			//see if the player's hand can offer the same size tractors
 			//as the leading hand
-			var qtyRemoved = removeTractorFrom( firstHandClone );
+			var qtyRemoved = removeTractorFrom( firstHandClone ).size();
 			while( qtyRemoved > 0 ){
-				if ( removeTractorLengthFrom( subhand , qtyRemoved ) == false ) {
+				if ( removeTractorLengthFrom( 
+						subhand , qtyRemoved ).size() == 0 ) {
 					return false;
 				}	
-				qtyRemoved = removeTractorFrom( firstHandClone );
+				qtyRemoved = removeTractorFrom( firstHandClone ).size();
 			}
 			
 			//see if the player's hand can offer the same number of pairs
 			//as the leading hand
-			qtyRemoved = removePairFrom( firstHandClone );
+			qtyRemoved = removePairFrom( firstHandClone ).size();
 			while( qtyRemoved > 0 ) {
-				if ( removePairFrom( subhand ) == 0 ) {
+				if ( removePairFrom( subhand ).size() == 0 ) {
 					return false;
 				}
-				qtyRemoved = removePairFrom( firstHandClone );
+				qtyRemoved = removePairFrom( firstHandClone ).size();
 			}
 			
 			//see if player's hand can offer the same number of single cards
 			//as the leading hand
-			qtyRemoved = removeSingleFrom( firstHandClone );
+			qtyRemoved = removeSingleFrom( firstHandClone ).size();
 			while( qtyRemoved > 0 ) {
-				if ( removeSingleFrom( subhand ) == 0 ) {
+				if ( removeSingleFrom( subhand ).size() == 0 ) {
 					return false;
 				}
-				qtyRemoved = removeSingleFrom( firstHandClone );
+				qtyRemoved = removeSingleFrom( firstHandClone ).size();
 			}
 		}
 		return true;
 	}
 }
 
-/*
+
 //Unit Tests:
 //Reminder: constructor for Card is Card( suit , value ) not
 //Card( value , suit )

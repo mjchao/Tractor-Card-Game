@@ -184,7 +184,7 @@ function removeTractorLengthFrom( hand , length ) {
 	for ( var start=0 ; start+length <= hand.size() ; ++start ) {
 		if ( isTractor( hand.subhand( start , start+length ) ) ) {
 			for ( var i=0 ; i<length ; ++i ) {
-				hand.removeAt( i );
+				hand.removeAt( start );
 			}
 			return true;
 		}
@@ -288,6 +288,7 @@ function Trick( level , trumpSuit , firstHand ) {
 	}
 }
 
+/*
 //Unit Tests:
 //Reminder: constructor for Card is Card( suit , value ) not
 //Card( value , suit )
@@ -298,7 +299,7 @@ function assert( condition , message ) {
 }
 var testHand = new Hand();
 
-/*//PAIR TESTS
+//PAIR TESTS
 testHand.clear();
 testHand.addCard( new Card( 2 , 2 ) );
 testHand.addCard( new Card( 2 , 2 ) );
@@ -323,9 +324,8 @@ testHand.clear();
 testHand.addCard( new Card( 5 , 0 ) );
 testHand.addCard( new Card( 5 , 0 ) );
 assert( isPair( testHand , 2 , 2 ) );
-//*/
 
-/*//TRACTOR TESTS
+//TRACTOR TESTS
 //test normal tractor 2-2-3-3 of non-trump
 testHand.clear();
 testHand.addCard( new Card( 2 , 2 ) );
@@ -467,13 +467,12 @@ testHand.addCard( new Card( 2 , 2 ) );
 testHand.addCard( new Card( 6 , 0 ) );
 testHand.addCard( new Card( 6 , 0 ) );
 assert( !isTractor( testHand , 2 , 5 ) );
-//*/
 
 //CAN FOLLOW tests
 var testFirstHand = new Hand();
 var testTrick;
 
-/*
+
 //test triple tractor
 testFirstHand.clear();
 testFirstHand.addCard( new Card( 2 , 2 ) );
@@ -740,7 +739,6 @@ testHand.addCard( new Card( 2 , 6 ) );
 testHand.addCard( new Card( 2 , 7 ) );
 testTrick = new Trick( 10 , 3 , testFirstHand );
 assert( !testTrick.canHandFollow( testHand ) );
-//*/
 
 //test single+tractor dump, can't follow
 testFirstHand.clear();

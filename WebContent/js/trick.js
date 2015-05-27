@@ -146,7 +146,7 @@ function isTractor( hand , level , trumpSuit ) {
 }
 
 function removeSingleFrom( hand ) {
-	for ( var i=0 ; i<hand.size()-1 ; ++i ) {
+	for ( var i=0 ; i<hand.size() ; ++i ) {
 		if ( isSingle( hand.subhand( i , i+1 ) ) ) {
 			hand.removeAt( i );
 			return 1;
@@ -184,7 +184,7 @@ function removeTractorLengthFrom( hand , length ) {
 	for ( var start=0 ; start+length <= hand.size() ; ++start ) {
 		if ( isTractor( hand.subhand( start , start+length ) ) ) {
 			for ( var i=0 ; i<length ; ++i ) {
-				hand.removeAt( length );
+				hand.removeAt( i );
 			}
 			return true;
 		}
@@ -225,7 +225,6 @@ function Trick( level , trumpSuit , firstHand ) {
 	 * @param hand the player's hand 
 	 */
 	this.canHandFollow = function( hand ) {
-		
 		//only consider the cards of the correct suit
 		var subhand = new Hand();
 		for ( var i=0 ; i<hand.size() ; ++i ) {
@@ -645,7 +644,6 @@ testHand.addCard( new Card( 2 , 4 ) );
 testHand.addCard( new Card( 2 , 4 ) );
 testTrick = new Trick( 10 , 3 , testFirstHand );
 assert( testTrick.canHandFollow( testHand ) );
-//*/
 
 testFirstHand.clear();
 testFirstHand.addCard( new Card( 2 , 8 ) );
@@ -682,7 +680,46 @@ testHand.addCard( new Card( 2 , 5 ) );
 testTrick = new Trick( 10 , 3 , testFirstHand );
 assert( testTrick.canHandFollow( testHand ) );
 
-/*
+//test can follow: bunch of singles and a pair
+testFirstHand.clear();
+testFirstHand.addCard( new Card( 2 , 2 ) );
+testFirstHand.addCard( new Card( 2 , 3 ) );
+testFirstHand.addCard( new Card( 2 , 4 ) );
+testFirstHand.addCard( new Card( 2 , 7 ) );
+testFirstHand.addCard( new Card( 2 , 12 ) );
+testFirstHand.addCard( new Card( 2 , 12 ) );
+testFirstHand.addCard( new Card( 2 , 1 ) );
+testHand.clear();
+testHand.addCard( new Card( 2 , 2 ) );
+testHand.addCard( new Card( 2 , 2 ) );
+testHand.addCard( new Card( 2 , 3 ) );
+testHand.addCard( new Card( 2 , 3 ) );
+testHand.addCard( new Card( 2 , 4 ) );
+testHand.addCard( new Card( 2 , 4 ) );
+testHand.addCard( new Card( 2 , 5 ) );
+testHand.addCard( new Card( 2 , 5 ) );
+testTrick = new Trick( 10 , 3 , testFirstHand );
+assert( testTrick.canHandFollow( testHand ) );
+
+//test can follow: tractor and pair
+testFirstHand.clear();
+testFirstHand.addCard( new Card( 2 , 2 ) );
+testFirstHand.addCard( new Card( 2 , 2 ) );
+testFirstHand.addCard( new Card( 2 , 3 ) );
+testFirstHand.addCard( new Card( 2 , 3 ) );
+testFirstHand.addCard( new Card( 2 , 1 ) );
+testFirstHand.addCard( new Card( 2 , 1 ) );
+testHand.clear();
+testHand.addCard( new Card( 2 , 2 ) );
+testHand.addCard( new Card( 2 , 2 ) );
+testHand.addCard( new Card( 2 , 3 ) );
+testHand.addCard( new Card( 3 , 3 ) );
+testHand.addCard( new Card( 2 , 11 ) );
+testHand.addCard( new Card( 2 , 5 ) );
+testHand.addCard( new Card( 2 , 5 ) );
+testTrick = new Trick( 10 , 3 , testFirstHand );
+assert( !testTrick.canHandFollow( testHand ) );
+
 //test single+pair+tractor dump, can't follow
 testFirstHand.clear();
 testFirstHand.addCard( new Card( 2 , 8 ) );
@@ -703,5 +740,104 @@ testHand.addCard( new Card( 2 , 6 ) );
 testHand.addCard( new Card( 2 , 7 ) );
 testTrick = new Trick( 10 , 3 , testFirstHand );
 assert( !testTrick.canHandFollow( testHand ) );
+//*/
+
+//test single+tractor dump, can't follow
+testFirstHand.clear();
+testFirstHand.addCard( new Card( 2 , 8 ) );
+testFirstHand.addCard( new Card( 2 , 8 ) );
+testFirstHand.addCard( new Card( 2 , 9 ) );
+testFirstHand.addCard( new Card( 2 , 9 ) );
+testFirstHand.addCard( new Card( 2 , 1 ) );
+testHand.clear();
+testHand.addCard( new Card( 2 , 4 ) );
+testHand.addCard( new Card( 2 , 4 ) );
+testHand.addCard( new Card( 2 , 5 ) );
+testHand.addCard( new Card( 2 , 5 ) );
+testHand.addCard( new Card( 3 , 6 ) );
+testTrick = new Trick( 10 , 3 , testFirstHand );
+assert( !testTrick.canHandFollow( testHand ) );
+
+//test just a single
+testFirstHand.clear();
+testFirstHand.addCard( new Card( 2 , 8 ) );
+testHand.clear();
+testHand.addCard( new Card( 2 , 4 ) );
+testHand.addCard( new Card( 2 , 4 ) );
+testHand.addCard( new Card( 2 , 5 ) );
+testHand.addCard( new Card( 2 , 5 ) );
+testHand.addCard( new Card( 3 , 6 ) );
+testTrick = new Trick( 10 , 3 , testFirstHand );
+assert( testTrick.canHandFollow( testHand ) );
+
+testFirstHand.clear();
+testFirstHand.addCard( new Card( 2 , 8 ) );
+testHand.clear();
+testHand.addCard( new Card( 1 , 4 ) );
+testHand.addCard( new Card( 1 , 4 ) );
+testHand.addCard( new Card( 3 , 5 ) );
+testHand.addCard( new Card( 1 , 5 ) );
+testHand.addCard( new Card( 4 , 6 ) );
+testTrick = new Trick( 10 , 3 , testFirstHand );
+assert( !testTrick.canHandFollow( testHand ) );
+
+//test just a pair
+testFirstHand.clear();
+testFirstHand.addCard( new Card( 2 , 8 ) );
+testFirstHand.addCard( new Card( 2 , 8 ) );
+testHand.clear();
+testHand.addCard( new Card( 2 , 4 ) );
+testHand.addCard( new Card( 2 , 5 ) );
+testHand.addCard( new Card( 2 , 6 ) );
+testHand.addCard( new Card( 2 , 7 ) );
+testHand.addCard( new Card( 3 , 8 ) );
+testTrick = new Trick( 10 , 3 , testFirstHand );
+assert( !testTrick.canHandFollow( testHand ) );
+
+testFirstHand.clear();
+testFirstHand.addCard( new Card( 2 , 8 ) );
+testFirstHand.addCard( new Card( 2 , 8 ) );
+testHand.clear();
+testHand.addCard( new Card( 2 , 4 ) );
+testHand.addCard( new Card( 2 , 4 ) );
+testHand.addCard( new Card( 1 , 5 ) );
+testHand.addCard( new Card( 2 , 6 ) );
+testTrick = new Trick( 10 , 3 , testFirstHand );
+assert( testTrick.canHandFollow( testHand ) );
+
+//test just a tractor
+testFirstHand.clear();
+testFirstHand.addCard( new Card( 2 , 8 ) );
+testFirstHand.addCard( new Card( 2 , 8 ) );
+testFirstHand.addCard( new Card( 2 , 9 ) );
+testFirstHand.addCard( new Card( 2 , 9 ) );
+testHand.clear();
+testHand.addCard( new Card( 2 , 2 ) );
+testHand.addCard( new Card( 2 , 3 ) );
+testHand.addCard( new Card( 2 , 4 ) );
+testHand.addCard( new Card( 2 , 4 ) );
+testHand.addCard( new Card( 2 , 5 ) );
+testHand.addCard( new Card( 2 , 5 ) );
+testHand.addCard( new Card( 2 , 6 ) );
+testHand.addCard( new Card( 2 , 7 ) );
+testTrick = new Trick( 10 , 3 , testFirstHand );
+assert( testTrick.canHandFollow( testHand ) );
+
+testFirstHand.clear();
+testFirstHand.addCard( new Card( 2 , 8 ) );
+testFirstHand.addCard( new Card( 2 , 8 ) );
+testFirstHand.addCard( new Card( 2 , 9 ) );
+testFirstHand.addCard( new Card( 2 , 9 ) );
+testHand.clear();
+testHand.addCard( new Card( 2 , 2 ) );
+testHand.addCard( new Card( 2 , 3 ) );
+testHand.addCard( new Card( 2 , 4 ) );
+testHand.addCard( new Card( 2 , 4 ) );
+testHand.addCard( new Card( 2 , 5 ) );
+testHand.addCard( new Card( 2 , 5 ) );
+testHand.addCard( new Card( 2 , 6 ) );
+testHand.addCard( new Card( 2 , 7 ) );
+testTrick = new Trick( 10 , 3 , testFirstHand );
+assert( testTrick.canHandFollow( testHand ) );
 //*/
 

@@ -316,33 +316,33 @@ function Trick( level , trumpSuit , firstHand , leader ) {
 		return true;
 	}
 	
-	this.leaderNameToIdx = function( leader ) {
-		if ( leader == "N" ) {
+	this.playerNameToIdx = function( playerName ) {
+		if ( playerName == "N" ) {
 			return 2;
 		}
-		else if ( leader == "S" ) {
+		else if ( playerName == "S" ) {
 			return 0;
 		}
-		else if ( leader == "E" ) {
+		else if ( playerName == "E" ) {
 			return 3;
 		}
-		else if ( leader == "W" ) {
+		else if ( playerName == "W" ) {
 			return 1;
 		}
 		return -1;
 	}
 	
-	this.leaderIdxToName = function( leaderIdx ) {
-		if ( leaderIdx == 0 ) {
+	this.playerIdxToName = function( playerIdx ) {
+		if ( playerIdx == 0 ) {
 			return "S";
 		}
-		else if ( leaderIdx == 1 ) {
+		else if ( playerIdx == 1 ) {
 			return "W";
 		}
-		else if ( leaderIdx == 2 ) {
+		else if ( playerIdx == 2 ) {
 			return "N";
 		}
-		else if ( leaderIdx == 3 ) {
+		else if ( playerIdx == 3 ) {
 			return "E";
 		}
 		return "?";
@@ -363,7 +363,7 @@ function Trick( level , trumpSuit , firstHand , leader ) {
 		}
 	}
 	
-	this.isTrump( card ) {
+	this.isTrump = function( card ) {
 		if ( card.suit == this.trumpSuit ) {
 			return true;
 		}
@@ -387,8 +387,8 @@ function Trick( level , trumpSuit , firstHand , leader ) {
 	 * change the order in which cards were placed in hands by the dealing
 	 * functions.
 	 */
-	this.determineTrickWinner = function() {
-		var leaderIdx = this.leaderNameToidx( this.leader );
+	this.determineWinner = function() {
+		var leaderIdx = this.playerNameToIdx( this.leader );
 		var winner = leaderIdx;
 		var winningHand = this.firstHand;
 		
@@ -398,13 +398,18 @@ function Trick( level , trumpSuit , firstHand , leader ) {
 			//hands in counter-clockwise order until we reach the leader again
 			for ( var i = (leaderIdx+1) % 4 ; i != leaderIdx ; i = (i+1) % 4 ) {
 				var handToConsider = this.hands[ i ];
-				
+				if ( handToConsider == undefined ) {
+					console.log( i );
+				}
 				var cardPlayed = handToConsider.get( 0 );
 				var winningCard = winningHand.get( 0 );
-				if ( cardPlayed.compareToByDeclared( winningCard , 
+				if ( this.isTrump( cardPlayed ) || 
+										cardPlayed.suit == winningCard.suit ) {
+					if ( cardPlayed.compareToByDeclared( winningCard , 
 										this.level , this.trumpSuit ) > 0 ) {
-					winningHand = handToConsider;
-					winner = i;
+						winningHand = handToConsider;
+						winner = i;
+					}
 				}
 			}
 		}
@@ -415,10 +420,13 @@ function Trick( level , trumpSuit , firstHand , leader ) {
 				if ( isPair( handToConsider ) ) {
 					var pairCard = handToConsider.get( 0 );
 					var winningPairCard = winningHand.get( 0 );
-					if ( pairCard.compareToByDeclared( winningCard , 
+					if ( this.isTrump( pairCard ) || 
+									pairCard.suit == winningPairCard.suit ) {
+						if ( pairCard.compareToByDeclared( winningPairCard , 
 										this.level , this.trumpSuit ) > 0 ) {
-						winningHand = handToConsider;
-						winner = i;
+							winningHand = handToConsider;
+							winner = i;
+						}
 					}
 				}
 			}
@@ -430,10 +438,13 @@ function Trick( level , trumpSuit , firstHand , leader ) {
 				if ( isTractor( handToConsider ) ) {
 					var tractorCard = handToConsider.get( 0 );
 					var winningPairCard = winningHand.get( 0 );
-					if ( tractorCard.compareToByDeclared( winningCard , 
+					if ( this.isTrump( tractorCard ) || 
+							tractorCard.suit == winningPairCard.suit ) {
+						if ( tractorCard.compareToByDeclared( winningCard , 
 										this.level , this.trumpSuit ) > 0 ) {
-						winningHand = handToConsider;
-						winner = i;
+							winningHand = handToConsider;
+							winner = i;
+						}
 					}
 				}
 			}
@@ -524,7 +535,7 @@ function Trick( level , trumpSuit , firstHand , leader ) {
 					winningHand = this.hands[ i ];
 					winner = i;
 				}
-				continue;
+				return this.playerIdxToName( winner );
 			}
 			
 			nextPair = removePairFrom( winningHandCpy );
@@ -539,7 +550,7 @@ function Trick( level , trumpSuit , firstHand , leader ) {
 					winningHand = this.hands[ i ];
 					winner = i;
 				}
-				continue;
+				return this.playerIdxToName( winner );
 			}
 			
 			//if this code is reached, then the dump was all singles, so
@@ -552,10 +563,12 @@ function Trick( level , trumpSuit , firstHand , leader ) {
 				winner = i;
 			}
 		}
+		
+		return this.playerIdxToName( winner );
 	}
 }
 
-/*
+
 //Unit Tests:
 //Reminder: constructor for Card is Card( suit , value ) not
 //Card( value , suit )
@@ -564,6 +577,8 @@ function assert( condition , message ) {
 		throw message || "assertion failed :(";
 	}
 }
+
+/*
 var testHand = new Hand();
 
 //PAIR TESTS
@@ -1106,3 +1121,95 @@ testTrick = new Trick( 10 , 3 , testFirstHand );
 assert( testTrick.canHandFollow( testHand ) );
 //*/
 
+//WINNER OF TRICK TESTS
+var testTrick;
+var nHand = new Hand();
+var sHand = new Hand();
+var eHand = new Hand();
+var wHand = new Hand();
+
+//test single card
+nHand.clear();
+nHand.addCard( new Card( 2 , 2 ) );
+eHand.clear();
+eHand.addCard( new Card( 2 , 4 ) );
+sHand.clear();
+sHand.addCard( new Card( 2 , 3 ) );
+wHand.clear();
+wHand.addCard( new Card( 2 , 4 ) );
+
+//check that the order in which the 4s are played matters - i.e. first one
+//played is highest
+testTrick = new Trick( 10 , 3 , nHand , "N" );
+testTrick.setCardsPlayed( "E" , eHand );
+testTrick.setCardsPlayed( "S" , sHand );
+testTrick.setCardsPlayed( "W" , wHand );
+assert( testTrick.determineWinner() == "E" );
+
+testTrick = new Trick( 10 , 3 , sHand , "S" );
+testTrick.setCardsPlayed( "W" , wHand );
+testTrick.setCardsPlayed( "N" , nHand );
+testTrick.setCardsPlayed( "E" , eHand );
+assert( testTrick.determineWinner() == "W" );
+
+//check that the leader winning is also possible
+testTrick = new Trick( 10 , 3 , wHand , "W" );
+testTrick.setCardsPlayed( "N" , nHand );
+testTrick.setCardsPlayed( "E" , eHand );
+testTrick.setCardsPlayed( "S" , sHand );
+assert( testTrick.determineWinner() == "W" );
+
+//check that this accounts for trumps
+testTrick = new Trick( 2 , 3 , eHand , "E" );
+testTrick.setCardsPlayed( "S" , sHand );
+testTrick.setCardsPlayed( "W" , wHand );
+testTrick.setCardsPlayed( "N" , nHand );
+assert( testTrick.determineWinner() == "N" );
+
+//more checking that trumps are accounted for
+nHand.clear();
+nHand.addCard( new Card( 1 , 2 ) );
+eHand.clear();
+eHand.addCard( new Card( 2 , 4 ) );
+sHand.clear();
+sHand.addCard( new Card( 3 , 3 ) );
+wHand.clear();
+wHand.addCard( new Card( 3 , 1 ) );
+
+testTrick = new Trick( 2 , 3 , eHand , "E" );
+testTrick.setCardsPlayed( "S" , sHand );
+testTrick.setCardsPlayed( "W" , wHand );
+testTrick.setCardsPlayed( "N" , nHand );
+assert( testTrick.determineWinner() == "N" );
+
+//also check for non-trump discards
+testTrick = new Trick( 10 , 4 , eHand , "E" );
+testTrick.setCardsPlayed( "S" , sHand );
+testTrick.setCardsPlayed( "W" , wHand );
+testTrick.setCardsPlayed( "N" , nHand );
+assert( testTrick.determineWinner() == "E" );
+
+//test pairs
+nHand.clear();
+nHand.addCard( new Card( 1 , 2 ) );
+nHand.addCard( new Card( 1 , 2 ) );
+eHand.clear();
+eHand.addCard( new Card( 2 , 4 ) );
+eHand.addCard( new Card( 2 , 4 ) );
+sHand.clear();
+sHand.addCard( new Card( 3 , 3 ) );
+sHand.addCard( new Card( 3 , 3 ) );
+wHand.clear();
+wHand.addCard( new Card( 3 , 1 ) );
+wHand.addCard( new Card( 3 , 1 ) );
+testTrick = new Trick( 10 , 4 , wHand , "W" );
+testTrick.setCardsPlayed( "N" , nHand );
+testTrick.setCardsPlayed( "E" , eHand );
+testTrick.setCardsPlayed( "S" , sHand );
+assert( testTrick.determineWinner() == "W" );
+
+
+
+
+
+console.log( "Tests finished" );

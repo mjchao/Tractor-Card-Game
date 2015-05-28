@@ -1190,6 +1190,8 @@ testTrick.setCardsPlayed( "N" , nHand );
 assert( testTrick.determineWinner() == "E" );
 
 //test pairs
+
+//test discards
 nHand.clear();
 nHand.addCard( new Card( 1 , 2 ) );
 nHand.addCard( new Card( 1 , 2 ) );
@@ -1208,8 +1210,116 @@ testTrick.setCardsPlayed( "E" , eHand );
 testTrick.setCardsPlayed( "S" , sHand );
 assert( testTrick.determineWinner() == "W" );
 
+//test trumped
+nHand.clear();
+nHand.addCard( new Card( 1 , 2 ) );
+nHand.addCard( new Card( 1 , 2 ) );
+eHand.clear();
+eHand.addCard( new Card( 2 , 4 ) );
+eHand.addCard( new Card( 2 , 4 ) );
+sHand.clear();
+sHand.addCard( new Card( 3 , 3 ) );
+sHand.addCard( new Card( 3 , 3 ) );
+wHand.clear();
+wHand.addCard( new Card( 3 , 1 ) );
+wHand.addCard( new Card( 3 , 1 ) );
+testTrick = new Trick( 1 , 3 , nHand , "N" );
+testTrick.setCardsPlayed( "E" , eHand );
+testTrick.setCardsPlayed( "S" , sHand );
+testTrick.setCardsPlayed( "W" , wHand );
+assert( testTrick.determineWinner() == "W" );
 
+nHand.clear();
+nHand.addCard( new Card( 1 , 2 ) );
+nHand.addCard( new Card( 1 , 2 ) );
+eHand.clear();
+eHand.addCard( new Card( 1 , 4 ) );
+eHand.addCard( new Card( 1 , 4 ) );
+sHand.clear();
+sHand.addCard( new Card( 1 , 3 ) );
+sHand.addCard( new Card( 1 , 10 ) );
+wHand.clear();
+wHand.addCard( new Card( 3 , 2 ) );
+wHand.addCard( new Card( 3 , 2 ) );
+testTrick = new Trick( 10 , 3 , nHand , "N" );
+testTrick.setCardsPlayed( "E" , eHand );
+testTrick.setCardsPlayed( "S" , sHand );
+testTrick.setCardsPlayed( "W" , wHand );
+assert( testTrick.determineWinner() == "W" );
 
+//test West's trump failed because it is not a pair
+nHand.clear();
+nHand.addCard( new Card( 1 , 2 ) );
+nHand.addCard( new Card( 1 , 2 ) );
+eHand.clear();
+eHand.addCard( new Card( 2 , 4 ) );
+eHand.addCard( new Card( 2 , 4 ) );
+sHand.clear();
+sHand.addCard( new Card( 3 , 3 ) );
+sHand.addCard( new Card( 3 , 3 ) );
+wHand.clear();
+wHand.addCard( new Card( 3 , 1 ) );
+wHand.addCard( new Card( 3 , 2 ) );
+testTrick = new Trick( 1 , 3 , nHand , "N" );
+testTrick.setCardsPlayed( "E" , eHand );
+testTrick.setCardsPlayed( "S" , sHand );
+testTrick.setCardsPlayed( "W" , wHand );
+assert( testTrick.determineWinner() == "S" );
 
+//test all trumps failed since they are not pairs
+nHand.clear();
+nHand.addCard( new Card( 1 , 2 ) );
+nHand.addCard( new Card( 1 , 2 ) );
+eHand.clear();
+eHand.addCard( new Card( 2 , 4 ) );
+eHand.addCard( new Card( 2 , 4 ) );
+sHand.clear();
+sHand.addCard( new Card( 3 , 3 ) );
+sHand.addCard( new Card( 3 , 10 ) );
+wHand.clear();
+wHand.addCard( new Card( 3 , 1 ) );
+wHand.addCard( new Card( 3 , 2 ) );
+testTrick = new Trick( 1 , 3 , nHand , "N" );
+testTrick.setCardsPlayed( "E" , eHand );
+testTrick.setCardsPlayed( "S" , sHand );
+testTrick.setCardsPlayed( "W" , wHand );
+assert( testTrick.determineWinner() == "N" );
+
+//test winning trick with same-suit pair
+nHand.clear();
+nHand.addCard( new Card( 1 , 2 ) );
+nHand.addCard( new Card( 1 , 2 ) );
+eHand.clear();
+eHand.addCard( new Card( 1 , 4 ) );
+eHand.addCard( new Card( 1 , 4 ) );
+sHand.clear();
+sHand.addCard( new Card( 1 , 3 ) );
+sHand.addCard( new Card( 1 , 10 ) );
+wHand.clear();
+wHand.addCard( new Card( 3 , 2 ) );
+wHand.addCard( new Card( 3 , 2 ) );
+testTrick = new Trick( 2 , 3 , nHand , "N" );
+testTrick.setCardsPlayed( "E" , eHand );
+testTrick.setCardsPlayed( "S" , sHand );
+testTrick.setCardsPlayed( "W" , wHand );
+assert( testTrick.determineWinner() == "W" );
+
+nHand.clear();
+nHand.addCard( new Card( 1 , 2 ) );
+nHand.addCard( new Card( 1 , 2 ) );
+eHand.clear();
+eHand.addCard( new Card( 1 , 4 ) );
+eHand.addCard( new Card( 1 , 4 ) );
+sHand.clear();
+sHand.addCard( new Card( 1 , 3 ) );
+sHand.addCard( new Card( 1 , 10 ) );
+wHand.clear();
+wHand.addCard( new Card( 3 , 2 ) );
+wHand.addCard( new Card( 3 , 2 ) );
+testTrick = new Trick( 1 , 2 , nHand , "N" );
+testTrick.setCardsPlayed( "E" , eHand );
+testTrick.setCardsPlayed( "S" , sHand );
+testTrick.setCardsPlayed( "W" , wHand );
+assert( testTrick.determineWinner() == "E" );
 
 console.log( "Tests finished" );

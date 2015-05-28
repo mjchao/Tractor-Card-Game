@@ -211,6 +211,7 @@ function flipNoTrump() {
 }
 
 var trick = undefined;
+var lastWinner = -1;
 var northAI = new AI( new AIData( round.handN ) );
 var eastAI = new AI( new AIData( round.handE ) );
 var westAI = new AI( new AIData( round.handW ) );
@@ -323,14 +324,16 @@ function beginPlay() {
 }
 
 function play() {
+	var aiPlayed = false;
 	while( currIdx != 0 && (trick == undefined || !trick.finished()) ) {
 		aiMakeMove( currIdx );
+		aiPlayed = true;
 		currIdx = ( currIdx + 1 ) % 4;
 	}
 	if ( trick == undefined || trick.finished() ) {
-		if ( currIdx != 0 ) {
+		if ( aiPlayed ) {
 			document.getElementById( "cmdNextTrick" ).setAttribute( 
-														"class" , "command" );
+													"class" , "command" );
 		}
 	}
 }
@@ -340,7 +343,13 @@ function playSelected() {
 												"class" , "commandDisabled" );
 	playSelectedCards( 0 , round.handS );
 	++currIdx;
-	play();
+	if ( trick.finished() ) {
+		document.getElementById( "cmdNextTrick" ).setAttribute( 
+														"class" , "command" );
+	}
+	else {
+		play();
+	}
 }
 
 function startNextTrick() {
@@ -350,8 +359,8 @@ function startNextTrick() {
 		document.getElementById( "cmdPlayTrick" ).setAttribute( 
 						"class" , "command" );
 		document.getElementById( "pnlCenter" ).innerHTML = "";
-		var winner = trick.determineWinner();
-		var idx = playerNameToIdx( winner );
+		lastWinner = trick.determineWinner();
+		var idx = playerNameToIdx( lastWinner );
 		currIdx = idx;
 		trick = undefined;
 		play();

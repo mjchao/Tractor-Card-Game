@@ -34,7 +34,6 @@ function isPair( hand ) {
  * @returns {Boolean}
  */
 function isTractor( hand , level , trumpSuit ) {
-	
 	hand = hand.deepClone();
 	hand.hand.sort( 
 		new CardComparatorForHandsDeclared( level , trumpSuit ).compare );
@@ -90,7 +89,7 @@ function isTractor( hand , level , trumpSuit ) {
 		var pair2 = hand.get( i+1 );
 		
 		//ace-king is consecutive
-		if ( pair1.value == 1 && pair2.value == 12 ) {
+		if ( pair1.value == 1 && pair2.value == 13 ) {
 			ok = true;
 		}
 		
@@ -171,11 +170,12 @@ function removePairFrom( hand ) {
 	return rtn;
 }
 
-function removeTractorFrom( hand ) {
+function removeTractorFrom( hand , level , trumpSuit ) {
 	var rtn = new Hand();
 	for ( var length=24 ; length >= 4 ; length -= 2 ) {
 		for ( var start=0 ; start+length <= hand.size() ; ++start ) {
-			if ( isTractor( hand.subhand( start , start+length ) ) ) {
+			if ( isTractor( hand.subhand( start , start+length , 
+													level , trumpSuit ) ) ) {
 				for ( var i=0 ; i<length ; ++i ) {
 					rtn.addCard( hand.get( start ) );
 					hand.removeAt( start );
@@ -187,10 +187,11 @@ function removeTractorFrom( hand ) {
 	return rtn;
 }
 
-function removeTractorLengthFrom( hand , length ) {
+function removeTractorLengthFrom( hand , length , level , trumpSuit ) {
 	var rtn = new Hand();
 	for ( var start=0 ; start+length <= hand.size() ; ++start ) {
-		if ( isTractor( hand.subhand( start , start+length ) ) ) {
+		if ( isTractor( hand.subhand( start , start+length ) , 
+														level , trumpSuit ) ) {
 			for ( var i=0 ; i<length ; ++i ) {
 				rtn.addCard( hand.get( start ) );
 				hand.removeAt( start );
@@ -212,18 +213,27 @@ function Trick( level , trumpSuit , firstHand , leader ) {
 	//South = index 0 , West = index 1 , North = index 2 , East = index 3
 	//this maintains the counter-clockwise order
 	this.hands = [ undefined , undefined , undefined , undefined ];
-	if ( leader == "N" ) {
-		this.hands[ 2 ] = firstHand;
+	
+	this.setCardsPlayed = function( player , cardsPlayed ) {
+		var idx = -1;
+		if ( player == "N" ) {
+			idx = 2;
+		}
+		else if ( player == "S" ) {
+			idx = 0;
+		}
+		else if ( player == "E" ) {
+			idx = 3;
+		}
+		else if ( player == "W" ) {
+			idx = 1;
+		}
+		this.hands[ idx ] = cardsPlayed.clone();
+		this.hands[ idx ].hand.sort( 
+			new CardComparatorForHandsDeclared( level , trumpSuit ).compare);
 	}
-	else if ( leader == "S" ) {
-		this.hands[ 0 ] = firstHand;
-	}
-	else if ( leader == "E" ) {
-		this.hands[ 3 ] = firstHand;
-	}
-	else if ( leader == "W" ) {
-		this.hands[ 1 ] = firstHand;
-	}
+	
+	this.setCardsPlayed( leader , firstHand );
 	
 	if ( firstHand.get( 0 ).suit == 6 || 
 			firstHand.get( 0 ).suit == 5 || 
@@ -234,7 +244,7 @@ function Trick( level , trumpSuit , firstHand , leader ) {
 		this.suit = firstHand.get( 0 ).suit;
 	}
 	
-	if ( isTractor( firstHand ) ) {
+	if ( isTractor( firstHand , level , trumpSuit ) ) {
 		this.type = TrickTypes.TRACTOR;
 	}
 	else if ( isPair( firstHand ) ) {
@@ -271,7 +281,8 @@ function Trick( level , trumpSuit , firstHand , leader ) {
 		}
 		if ( this.type == TrickTypes.TRACTOR ) {
 			var tractorLength = this.firstHand.size();
-			return removeTractorFrom( subhand.clone() ).size() >= tractorLength;
+			return removeTractorFrom( subhand.clone() , 
+					this.level , this.trumpSuit ).size() >= tractorLength;
 		}
 		else if ( this.type == TrickTypes.PAIR ) {
 			return removePairFrom( subhand.clone() ).size() == 2;
@@ -284,13 +295,15 @@ function Trick( level , trumpSuit , firstHand , leader ) {
 			
 			//see if the player's hand can offer the same size tractors
 			//as the leading hand
-			var qtyRemoved = removeTractorFrom( firstHandClone ).size();
+			var qtyRemoved = removeTractorFrom( firstHandClone , 
+										this.level , this.trumpSuit ).size();
 			while( qtyRemoved > 0 ){
 				if ( removeTractorLengthFrom( 
 						subhand , qtyRemoved ).size() == 0 ) {
 					return false;
 				}	
-				qtyRemoved = removeTractorFrom( firstHandClone ).size();
+				qtyRemoved = removeTractorFrom( firstHandClone , 
+									this.level , this.trumpSuit ).size();
 			}
 			
 			//see if the player's hand can offer the same number of pairs
@@ -348,21 +361,6 @@ function Trick( level , trumpSuit , firstHand , leader ) {
 		return "?";
 	}
 	
-	this.setCardsPlayed = function( player , cardsPlayed ) {
-		if ( player == "N" ) {
-			this.hands[ 2 ] = cardsPlayed;
-		}
-		else if ( player == "S" ) {
-			this.hands[ 0 ] = cardsPlayed;
-		}
-		else if ( player == "E" ) {
-			this.hands[ 3 ] = cardsPlayed;
-		}
-		else if ( player == "W" ) {
-			this.hands[ 1 ] = cardsPlayed;
-		}
-	}
-	
 	this.isTrump = function( card ) {
 		if ( card.suit == this.trumpSuit ) {
 			return true;
@@ -398,9 +396,6 @@ function Trick( level , trumpSuit , firstHand , leader ) {
 			//hands in counter-clockwise order until we reach the leader again
 			for ( var i = (leaderIdx+1) % 4 ; i != leaderIdx ; i = (i+1) % 4 ) {
 				var handToConsider = this.hands[ i ];
-				if ( handToConsider == undefined ) {
-					console.log( i );
-				}
 				var cardPlayed = handToConsider.get( 0 );
 				var winningCard = winningHand.get( 0 );
 				if ( this.isTrump( cardPlayed ) || 
@@ -461,8 +456,8 @@ function Trick( level , trumpSuit , firstHand , leader ) {
 				var handToConsider = this.hands[ i ].clone();
 				
 				var isAllTrump = true;
-				for ( var i=0 ; i<handToConsider.size() ; ++i ) {
-					if ( !this.isTrump( handToConsider.get( i ) ) ) {
+				for ( var j=0 ; j<handToConsider.size() ; ++j ) {
+					if ( !this.isTrump( handToConsider.get( j ) ) ) {
 						isAllTrump = false;
 						break;
 					}
@@ -475,93 +470,112 @@ function Trick( level , trumpSuit , firstHand , leader ) {
 				//check that the hand played meets all the combination
 				//requirements of the leading hand
 				var firstHandCpy = this.firstHand.clone();
+				var combinationsMet = true;
 				
-				var nextTractor = removeTractorFrom( firstHandCpy );
+				var nextTractor = removeTractorFrom( firstHandCpy , 
+												this.level , this.trumpSuit );
 				while( nextTractor.size() > 0 ) {
 					if ( removeTractorLengthFrom( handToConsider , 
-											nextTractor.size() ).size() == 0 ) {
+								nextTractor.size() , this.level , 
+												this.trumpSuit ).size() == 0 ) {
 						
 						//insufficient number of tractors => fail
-						continue;
+						combinationsMet = false;
+						break;
 					}
-					nextTractor = removeTractorFrom( firstHandCpy );
+					nextTractor = removeTractorFrom( firstHandCpy , 
+												this.level , this.trumpSuit );
 				}
 				
-				var nextPair = removePairFrom( firstHandCpy );
-				while( nextPair.size() > 0 ) {
-					if ( removePairFrom( handToConsider ).size() == 0 ) {
-						
-						//insufficient number of pairs => fail
-						continue;
+				if ( combinationsMet ) {
+					var nextPair = removePairFrom( firstHandCpy );
+					while( nextPair.size() > 0 ) {
+						if ( removePairFrom( handToConsider ).size() == 0 ) {
+							
+							//insufficient number of pairs => fail
+							combinationsMet = false;
+							break;
+						}
+						nextPair = removePairFrom( firstHandCpy );
 					}
-					nextPair = removePairFrom( firstHandCpy );
 				}
 				
-				var nextSingle = removeSingleFrom( firstHandCpy );
-				while( nextSingle.size() > 0 ) {
-					if ( removeSingleFrom( handToConsider ).size() == 0 ) {
-						
-						//insufficient number of singles => fail
-						continue;
+				if ( combinationsMet ) {
+					var nextSingle = removeSingleFrom( firstHandCpy );
+					while( nextSingle.size() > 0 ) {
+						if ( removeSingleFrom( handToConsider ).size() == 0 ) {
+							
+							//insufficient number of singles => fail
+							combinationsMet = false;
+							break;
+						}
+						nextSingle = removeSingleFrom( firstHandCpy );
 					}
-					nextSingle = removeSingleFrom( firsthandCpy );
 				}
-			}
-			
-			//now that we know the hand to consider has met all combination
-			//requirements, we just find the rarest combination and compare
-			//the best of those, and whichever hand has the higher one wins
-			
-			//for example, if the leading hand had a tractor, whichever hand
-			//has the higher tractor wins - all other combinations are
-			//disregarded
-			
-			//if the leading hand had no tractors, but it had a pair, then
-			//whichever hand has the highest pair wins - all singles are 
-			//disregarded
-			firstHandCopy = this.firstHand.clone();
-			var winningHandCpy = this.winningHand.clone();
-			handToConsider = this.hands[ i ].clone();
-			
-			nextTractor = removeTractorFrom( winningHandCpy );
-			if ( nextTractor.size() > 0 ) {
-				var bestWinningTractor = removeTractorLengthFrom( 
-										winningHandCpy , nextTractor.size() );
-				var bestConsideredTractor = removeTractorLengthFrom( 
-										handToConsider , nextTractor.size() );
 				
-				if ( bestConsideredTractor.get( 0 ).compareToByDeclared( 
-						bestWinningTractor.get( 0 ) , this.level , 
+				if ( !combinationsMet ) {
+					continue;
+				}
+				
+				//now that we know the hand to consider has met all combination
+				//requirements, we just find the rarest combination and compare
+				//the best of those, and whichever hand has the higher one wins
+				
+				//for example, if the leading hand had a tractor, whichever hand
+				//has the higher tractor wins - all other combinations are
+				//disregarded
+				
+				//if the leading hand had no tractors, but it had a pair, then
+				//whichever hand has the highest pair wins - all singles are 
+				//disregarded
+				firstHandCpy = this.firstHand.clone();
+				var winningHandCpy = winningHand.clone();
+				handToConsider = this.hands[ i ].clone();
+				
+				nextTractor = removeTractorFrom( firstHandCpy , 
+												this.level , this.trumpSuit );
+				if ( nextTractor.size() > 0 ) {
+					var bestWinningTractor = removeTractorLengthFrom( 
+									winningHandCpy , nextTractor.size() , 
+												this.level , this.trumpSuit);
+					var bestConsideredTractor = removeTractorLengthFrom( 
+									handToConsider , nextTractor.size() , 
+												this.level , this.trumpSuit );
+					
+					if ( bestConsideredTractor.get( 0 ).compareToByDeclared( 
+							bestWinningTractor.get( 0 ) , this.level , 
+													this.trumpSuit ) > 0 ) {
+						winningHand = this.hands[ i ];
+						winner = i;
+					}
+					continue;
+				}
+				
+				nextPair = removePairFrom( firstHandCpy );
+				if ( nextPair.size() > 0 ) {
+					var bestWinningPair = removePairFrom( winningHandCpy );
+					var winningPairCard = bestWinningPair.get( 0 );
+					var bestConsideredPair = removePairFrom( handToConsider );
+					var consideredPairCard = bestConsideredPair.get( 0 );
+					
+					if ( consideredPairCard.compareToByDeclared( 
+											winningPairCard , this.level , 
 														this.trumpSuit ) > 0 ) {
-					winningHand = this.hands[ i ];
-					winner = i;
+						winningHand = this.hands[ i ];
+						winner = i;
+					}
+					continue;
 				}
-				return this.playerIdxToName( winner );
-			}
-			
-			nextPair = removePairFrom( winningHandCpy );
-			if ( nextPair.size() > 0 ) {
-				var bestWinningPair = removePairFrom( winningHandCpy );
-				var winningPairCard = bestWinningPair.get( 0 );
-				var bestConsideredPair = removePairFrom( handToConsider );
-				var consideredPairCard = bestConsideredPair.get( 0 );
 				
-				if ( consideredPairCard.compareToByDeclared( winningPairCard , 
+				//if this code is reached, then the dump was all singles, so
+				//we just compare the highest card in each hand
+				var bestWinningCard = winningHandCpy.get( 0 );
+				var bestConsideredCard = handToConsider.get( 0 );
+				if ( bestConsideredCard.compareToByDeclared( bestWinningCard , 
 										this.level , this.trumpSuit ) > 0 ) {
 					winningHand = this.hands[ i ];
 					winner = i;
 				}
-				return this.playerIdxToName( winner );
-			}
-			
-			//if this code is reached, then the dump was all singles, so
-			//we just compare the highest card in each hand
-			var bestWinningCard = winningHandCpy.get( 0 );
-			var bestConsideredCard = handToConsider.get( 0 );
-			if ( bestConsideredCard.compareToByDeclared( bestWinningCard , 
-										this.level , this.trumpSuit ) > 0 ) {
-				winningHand = this.hands[ i ];
-				winner = i;
 			}
 		}
 		
@@ -622,8 +636,8 @@ assert( isTractor( testHand , 10 , 3 ) );
 testHand.clear();
 testHand.addCard( new Card( 2 , 1 ) );
 testHand.addCard( new Card( 2 , 1 ) );
-testHand.addCard( new Card( 2 , 12 ) );
-testHand.addCard( new Card( 2 , 12 ) );
+testHand.addCard( new Card( 2 , 13 ) );
+testHand.addCard( new Card( 2 , 13 ) );
 assert( isTractor( testHand , 10 , 3 ) );
 
 //test bad tractor A-A-2-2 of non-trump
@@ -1513,5 +1527,334 @@ testTrick.setCardsPlayed( "E" , eHand );
 testTrick.setCardsPlayed( "S" , sHand );
 testTrick.setCardsPlayed( "W" , wHand );
 assert( testTrick.determineWinner() == "N" );
+
+//test dumps: note that in each test case, the dumper has the highest
+//cards in his/her suit, because otherwise, the dump would not be permitted
+
+//dumping three singles... checking that 1 (ace) > 2
+nHand.clear();
+nHand.addCard( new Card( 1 , 1 ) );
+nHand.addCard( new Card( 1 , 13 ) );
+nHand.addCard( new Card( 1 , 12 ) );
+eHand.clear();
+eHand.addCard( new Card( 1 , 2 ) );
+eHand.addCard( new Card( 1 , 3 ) );
+eHand.addCard( new Card( 1 , 4 ) );
+sHand.clear();
+sHand.addCard( new Card( 3 , 12 ) );
+sHand.addCard( new Card( 3 , 12 ) );
+sHand.addCard( new Card( 3 , 1 ) );
+wHand.clear();
+wHand.addCard( new Card( 3 , 10 ) );
+wHand.addCard( new Card( 3 , 10 ) );
+wHand.addCard( new Card( 5 , 0 ) );
+testTrick = new Trick( 5 , 4 , nHand , "N" );
+testTrick.setCardsPlayed( "E" , eHand );
+testTrick.setCardsPlayed( "S" , sHand );
+testTrick.setCardsPlayed( "W" , wHand );
+assert( testTrick.determineWinner() == "N" );
+
+//trumping three singles
+nHand.clear();
+nHand.addCard( new Card( 1 , 1 ) );
+nHand.addCard( new Card( 1 , 13 ) );
+nHand.addCard( new Card( 1 , 12 ) );
+eHand.clear();
+eHand.addCard( new Card( 1 , 2 ) );
+eHand.addCard( new Card( 1 , 3 ) );
+eHand.addCard( new Card( 1 , 4 ) );
+sHand.clear();
+sHand.addCard( new Card( 3 , 12 ) );
+sHand.addCard( new Card( 3 , 12 ) );
+sHand.addCard( new Card( 3 , 1 ) );
+wHand.clear();
+wHand.addCard( new Card( 3 , 10 ) );
+wHand.addCard( new Card( 3 , 10 ) );
+wHand.addCard( new Card( 5 , 0 ) );
+testTrick = new Trick( 10 , 4 , nHand , "N" );
+testTrick.setCardsPlayed( "E" , eHand );
+testTrick.setCardsPlayed( "S" , sHand );
+testTrick.setCardsPlayed( "W" , wHand );
+assert( testTrick.determineWinner() == "W" );
+
+
+//dumping a single and a pair
+nHand.clear();
+nHand.addCard( new Card( 1 , 1 ) );
+nHand.addCard( new Card( 1 , 13 ) );
+nHand.addCard( new Card( 1 , 13 ) );
+eHand.clear();
+eHand.addCard( new Card( 1 , 12 ) );
+eHand.addCard( new Card( 1 , 12 ) );
+eHand.addCard( new Card( 1 , 4 ) );
+sHand.clear();
+sHand.addCard( new Card( 1 , 9 ) );
+sHand.addCard( new Card( 1 , 10 ) );
+sHand.addCard( new Card( 1 , 11 ) );
+wHand.clear();
+wHand.addCard( new Card( 1 , 3 ) );
+wHand.addCard( new Card( 1 , 4 ) );
+wHand.addCard( new Card( 1 , 7 ) );
+testTrick = new Trick( 2 , 4 , nHand , "N" );
+testTrick.setCardsPlayed( "E" , eHand );
+testTrick.setCardsPlayed( "S" , sHand );
+testTrick.setCardsPlayed( "W" , wHand );
+assert( testTrick.determineWinner() == "N" );
+
+//trumping a single and a pair
+nHand.clear();
+nHand.addCard( new Card( 1 , 1 ) );
+nHand.addCard( new Card( 1 , 13 ) );
+nHand.addCard( new Card( 1 , 13 ) );
+eHand.clear();
+eHand.addCard( new Card( 4 , 2 ) );
+eHand.addCard( new Card( 4 , 2 ) );
+eHand.addCard( new Card( 4 , 4 ) );
+sHand.clear();
+sHand.addCard( new Card( 4 , 5 ) );
+sHand.addCard( new Card( 4 , 5 ) );
+sHand.addCard( new Card( 4 , 7 ) );
+wHand.clear();
+wHand.addCard( new Card( 4 , 10 ) );
+wHand.addCard( new Card( 4 , 10 ) );
+wHand.addCard( new Card( 5 , 0 ) );
+testTrick = new Trick( 10 , 4 , nHand , "N" );
+testTrick.setCardsPlayed( "E" , eHand );
+testTrick.setCardsPlayed( "S" , sHand );
+testTrick.setCardsPlayed( "W" , wHand );
+assert( testTrick.determineWinner() == "W" );
+
+//unable to trump single and a pair
+nHand.clear();
+nHand.addCard( new Card( 1 , 1 ) );
+nHand.addCard( new Card( 1 , 13 ) );
+nHand.addCard( new Card( 1 , 13 ) );
+eHand.clear();
+eHand.addCard( new Card( 4 , 2 ) );
+eHand.addCard( new Card( 4 , 3 ) );
+eHand.addCard( new Card( 4 , 4 ) );
+sHand.clear();
+sHand.addCard( new Card( 4 , 5 ) );
+sHand.addCard( new Card( 4 , 6 ) );
+sHand.addCard( new Card( 4 , 7 ) );
+wHand.clear();
+wHand.addCard( new Card( 4 , 10 ) );
+wHand.addCard( new Card( 4 , 11 ) );
+wHand.addCard( new Card( 5 , 0 ) );
+testTrick = new Trick( 10 , 4 , nHand , "N" );
+testTrick.setCardsPlayed( "E" , eHand );
+testTrick.setCardsPlayed( "S" , sHand );
+testTrick.setCardsPlayed( "W" , wHand );
+assert( testTrick.determineWinner() == "N" );
+
+//dumping tractor and a pair
+nHand.clear();
+nHand.addCard( new Card( 1 , 1 ) );
+nHand.addCard( new Card( 1 , 1 ) );
+nHand.addCard( new Card( 1 , 13 ) );
+nHand.addCard( new Card( 1 , 13 ) );
+nHand.addCard( new Card( 1 , 11 ) );
+nHand.addCard( new Card( 1 , 11 ) );
+eHand.clear();
+eHand.addCard( new Card( 1 , 2 ) );
+eHand.addCard( new Card( 1 , 3 ) );
+eHand.addCard( new Card( 1 , 4 ) );
+eHand.addCard( new Card( 2 , 2 ) );
+eHand.addCard( new Card( 2 , 3 ) );
+eHand.addCard( new Card( 2 , 7 ) );
+sHand.clear();
+sHand.addCard( new Card( 1 , 5 ) );
+sHand.addCard( new Card( 1 , 6 ) );
+sHand.addCard( new Card( 1 , 7 ) );
+sHand.addCard( new Card( 3 , 2 ) );
+sHand.addCard( new Card( 3 , 3 ) );
+sHand.addCard( new Card( 2 , 4 ) );
+wHand.clear();
+wHand.addCard( new Card( 4 , 10 ) );
+wHand.addCard( new Card( 4 , 10 ) );
+wHand.addCard( new Card( 4 , 2 ) );
+wHand.addCard( new Card( 4 , 3 ) );
+wHand.addCard( new Card( 4 , 4 ) );
+wHand.addCard( new Card( 4 , 5 ) );
+testTrick = new Trick( 10 , 4 , nHand , "N" );
+testTrick.setCardsPlayed( "E" , eHand );
+testTrick.setCardsPlayed( "S" , sHand );
+testTrick.setCardsPlayed( "W" , wHand );
+assert( testTrick.determineWinner() == "N" );
+
+//trumping tractor and pair
+nHand.clear();
+nHand.addCard( new Card( 1 , 1 ) );
+nHand.addCard( new Card( 1 , 1 ) );
+nHand.addCard( new Card( 1 , 13 ) );
+nHand.addCard( new Card( 1 , 13 ) );
+nHand.addCard( new Card( 1 , 11 ) );
+nHand.addCard( new Card( 1 , 11 ) );
+eHand.clear();
+eHand.addCard( new Card( 1 , 2 ) );
+eHand.addCard( new Card( 1 , 3 ) );
+eHand.addCard( new Card( 1 , 4 ) );
+eHand.addCard( new Card( 2 , 2 ) );
+eHand.addCard( new Card( 2 , 3 ) );
+eHand.addCard( new Card( 2 , 7 ) );
+sHand.clear();
+sHand.addCard( new Card( 4 , 3 ) );
+sHand.addCard( new Card( 4 , 3 ) );
+sHand.addCard( new Card( 4 , 5 ) );
+sHand.addCard( new Card( 4 , 5 ) );
+sHand.addCard( new Card( 4 , 6 ) );
+sHand.addCard( new Card( 4 , 6 ) );
+wHand.clear();
+wHand.addCard( new Card( 4 , 2 ) );
+wHand.addCard( new Card( 4 , 2 ) );
+wHand.addCard( new Card( 4 , 7 ) );
+wHand.addCard( new Card( 4 , 7 ) );
+wHand.addCard( new Card( 4 , 8 ) );
+wHand.addCard( new Card( 4 , 8 ) );
+testTrick = new Trick( 10 , 4 , nHand , "N" );
+testTrick.setCardsPlayed( "E" , eHand );
+testTrick.setCardsPlayed( "S" , sHand );
+testTrick.setCardsPlayed( "W" , wHand );
+assert( testTrick.determineWinner() == "W" );
+
+//trumping tractor and pair unsuccessfully
+nHand.clear();
+nHand.addCard( new Card( 1 , 1 ) );
+nHand.addCard( new Card( 1 , 1 ) );
+nHand.addCard( new Card( 1 , 13 ) );
+nHand.addCard( new Card( 1 , 13 ) );
+nHand.addCard( new Card( 1 , 11 ) );
+nHand.addCard( new Card( 1 , 11 ) );
+eHand.clear();
+eHand.addCard( new Card( 1 , 2 ) );
+eHand.addCard( new Card( 1 , 3 ) );
+eHand.addCard( new Card( 1 , 4 ) );
+eHand.addCard( new Card( 2 , 2 ) );
+eHand.addCard( new Card( 2 , 3 ) );
+eHand.addCard( new Card( 2 , 7 ) );
+sHand.clear();
+sHand.addCard( new Card( 4 , 2 ) );
+sHand.addCard( new Card( 4 , 3 ) );
+sHand.addCard( new Card( 4 , 5 ) );
+sHand.addCard( new Card( 4 , 5 ) );
+sHand.addCard( new Card( 4 , 6 ) );
+sHand.addCard( new Card( 4 , 6 ) );
+wHand.clear();
+wHand.addCard( new Card( 4 , 2 ) );
+wHand.addCard( new Card( 4 , 3 ) );
+wHand.addCard( new Card( 4 , 7 ) );
+wHand.addCard( new Card( 4 , 7 ) );
+wHand.addCard( new Card( 4 , 8 ) );
+wHand.addCard( new Card( 4 , 8 ) );
+testTrick = new Trick( 10 , 4 , nHand , "N" );
+testTrick.setCardsPlayed( "E" , eHand );
+testTrick.setCardsPlayed( "S" , sHand );
+testTrick.setCardsPlayed( "W" , wHand );
+assert( testTrick.determineWinner() == "N" );
+
+//trumping multiple tractors unsuccessfully because 1 trump tractor
+//is too short
+nHand.clear();
+nHand.addCard( new Card( 1 , 1 ) );
+nHand.addCard( new Card( 1 , 1 ) );
+nHand.addCard( new Card( 1 , 13 ) );
+nHand.addCard( new Card( 1 , 13 ) );
+nHand.addCard( new Card( 1 , 5 ) );
+nHand.addCard( new Card( 1 , 5 ) );
+nHand.addCard( new Card( 1 , 6 ) );
+nHand.addCard( new Card( 1 , 6 ) );
+nHand.addCard( new Card( 1 , 7 ) );
+nHand.addCard( new Card( 1 , 7 ) );
+eHand.clear();
+eHand.addCard( new Card( 1 , 2 ) );
+eHand.addCard( new Card( 1 , 3 ) );
+eHand.addCard( new Card( 1 , 4 ) );
+eHand.addCard( new Card( 2 , 2 ) );
+eHand.addCard( new Card( 2 , 3 ) );
+eHand.addCard( new Card( 2 , 7 ) );
+eHand.addCard( new Card( 2 , 11 ) );
+eHand.addCard( new Card( 2 , 12 ) );
+eHand.addCard( new Card( 2 , 2 ) );
+eHand.addCard( new Card( 2 , 3 ) );
+sHand.clear();
+sHand.addCard( new Card( 4 , 2 ) );
+sHand.addCard( new Card( 4 , 2 ) );
+sHand.addCard( new Card( 4 , 5 ) );
+sHand.addCard( new Card( 4 , 5 ) );
+sHand.addCard( new Card( 4 , 6 ) );
+sHand.addCard( new Card( 4 , 6 ) );
+sHand.addCard( new Card( 4 , 9 ) );
+sHand.addCard( new Card( 4 , 9 ) );
+sHand.addCard( new Card( 4 , 11 ) );
+sHand.addCard( new Card( 4 , 11 ) );
+wHand.clear();
+wHand.addCard( new Card( 4 , 12 ) );
+wHand.addCard( new Card( 4 , 12 ) );
+wHand.addCard( new Card( 4 , 13 ) );
+wHand.addCard( new Card( 4 , 13 ) );
+wHand.addCard( new Card( 4 , 1 ) );
+wHand.addCard( new Card( 4 , 1 ) );
+wHand.addCard( new Card( 3 , 10 ) );
+wHand.addCard( new Card( 3 , 10 ) );
+wHand.addCard( new Card( 4 , 10 ) );
+wHand.addCard( new Card( 5 , 0 ) );
+testTrick = new Trick( 10 , 4 , nHand , "N" );
+testTrick.setCardsPlayed( "E" , eHand );
+testTrick.setCardsPlayed( "S" , sHand );
+testTrick.setCardsPlayed( "W" , wHand );
+assert( testTrick.determineWinner() == "N" );
+//*/
+
+//successfully trumping multiple tractors unsuccessfully
+nHand.clear();
+nHand.addCard( new Card( 1 , 1 ) );
+nHand.addCard( new Card( 1 , 1 ) );
+nHand.addCard( new Card( 1 , 13 ) );
+nHand.addCard( new Card( 1 , 13 ) );
+nHand.addCard( new Card( 1 , 5 ) );
+nHand.addCard( new Card( 1 , 5 ) );
+nHand.addCard( new Card( 1 , 6 ) );
+nHand.addCard( new Card( 1 , 6 ) );
+nHand.addCard( new Card( 1 , 7 ) );
+nHand.addCard( new Card( 1 , 7 ) );
+eHand.clear();
+eHand.addCard( new Card( 1 , 2 ) );
+eHand.addCard( new Card( 1 , 3 ) );
+eHand.addCard( new Card( 1 , 4 ) );
+eHand.addCard( new Card( 2 , 2 ) );
+eHand.addCard( new Card( 2 , 3 ) );
+eHand.addCard( new Card( 2 , 7 ) );
+eHand.addCard( new Card( 2 , 11 ) );
+eHand.addCard( new Card( 2 , 12 ) );
+eHand.addCard( new Card( 2 , 2 ) );
+eHand.addCard( new Card( 2 , 3 ) );
+sHand.clear();
+sHand.addCard( new Card( 4 , 2 ) );
+sHand.addCard( new Card( 4 , 2 ) );
+sHand.addCard( new Card( 4 , 5 ) );
+sHand.addCard( new Card( 4 , 5 ) );
+sHand.addCard( new Card( 4 , 6 ) );
+sHand.addCard( new Card( 4 , 6 ) );
+sHand.addCard( new Card( 4 , 9 ) );
+sHand.addCard( new Card( 4 , 9 ) );
+sHand.addCard( new Card( 4 , 11 ) );
+sHand.addCard( new Card( 4 , 11 ) );
+wHand.clear();
+wHand.addCard( new Card( 4 , 12 ) );
+wHand.addCard( new Card( 4 , 12 ) );
+wHand.addCard( new Card( 4 , 13 ) );
+wHand.addCard( new Card( 4 , 13 ) );
+wHand.addCard( new Card( 4 , 1 ) );
+wHand.addCard( new Card( 4 , 1 ) );
+wHand.addCard( new Card( 3 , 10 ) );
+wHand.addCard( new Card( 3 , 10 ) );
+wHand.addCard( new Card( 4 , 10 ) );
+wHand.addCard( new Card( 4 , 10 ) );
+testTrick = new Trick( 10 , 4 , nHand , "N" );
+testTrick.setCardsPlayed( "E" , eHand );
+testTrick.setCardsPlayed( "S" , sHand );
+testTrick.setCardsPlayed( "W" , wHand );
+assert( testTrick.determineWinner() == "W" );
+
 
 console.log( "Tests finished" );

@@ -12,7 +12,6 @@ function deal() {
 	//round.tryDeclare( "N" , 3 );
 	//round.tryDeclare( "W" , 3 );
 	if ( round.dealer.finished() ) {
-		round.returnDeclaredCards();
 		
 		document.getElementById( "cmdDeal" ).setAttribute( 
 												"class" , "declareDisabled" );
@@ -107,7 +106,7 @@ function addBottomToHand() {
 }
 
 function showBottomCommands() {
-	
+	round.returnDeclaredCards();
 	addBottomToHand();
 	
 	//have to clear the center panel if the bottom was previously shown there

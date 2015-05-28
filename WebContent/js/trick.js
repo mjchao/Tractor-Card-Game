@@ -201,11 +201,30 @@ function removeTractorLengthFrom( hand , length ) {
 	return rtn;
 }
 
-function Trick( level , trumpSuit , firstHand ) {
+function Trick( level , trumpSuit , firstHand , leader ) {
 	
 	this.level = level;
 	this.trumpSuit = trumpSuit;
 	this.firstHand = firstHand;
+	this.leader = leader;
+	
+	//the cards the north, south, east, and west played
+	//South = index 0 , West = index 1 , North = index 2 , East = index 3
+	//this maintains the counter-clockwise order
+	this.hands = [ undefined , undefined , undefined , undefined ];
+	if ( leader == "N" ) {
+		this.hands[ 2 ] = firstHand;
+	}
+	else if ( leader == "S" ) {
+		this.hands[ 0 ] = firstHand;
+	}
+	else if ( leader == "E" ) {
+		this.hands[ 3 ] = firstHand;
+	}
+	else if ( leader == "W" ) {
+		this.hands[ 1 ] = firstHand;
+	}
+	
 	if ( firstHand.get( 0 ).suit == 6 || 
 			firstHand.get( 0 ).suit == 5 || 
 			firstHand.get( 0 ).value == level ) {
@@ -296,9 +315,247 @@ function Trick( level , trumpSuit , firstHand ) {
 		}
 		return true;
 	}
+	
+	this.leaderNameToIdx = function( leader ) {
+		if ( leader == "N" ) {
+			return 2;
+		}
+		else if ( leader == "S" ) {
+			return 0;
+		}
+		else if ( leader == "E" ) {
+			return 3;
+		}
+		else if ( leader == "W" ) {
+			return 1;
+		}
+		return -1;
+	}
+	
+	this.leaderIdxToName = function( leaderIdx ) {
+		if ( leaderIdx == 0 ) {
+			return "S";
+		}
+		else if ( leaderIdx == 1 ) {
+			return "W";
+		}
+		else if ( leaderIdx == 2 ) {
+			return "N";
+		}
+		else if ( leaderIdx == 3 ) {
+			return "E";
+		}
+		return "?";
+	}
+	
+	this.setCardsPlayed = function( player , cardsPlayed ) {
+		if ( player == "N" ) {
+			this.hands[ 2 ] = cardsPlayed;
+		}
+		else if ( player == "S" ) {
+			this.hands[ 0 ] = cardsPlayed;
+		}
+		else if ( player == "E" ) {
+			this.hands[ 3 ] = cardsPlayed;
+		}
+		else if ( player == "W" ) {
+			this.hands[ 1 ] = cardsPlayed;
+		}
+	}
+	
+	this.isTrump( card ) {
+		if ( card.suit == this.trumpSuit ) {
+			return true;
+		}
+		if ( card.suit > 4 ) {
+			return true;
+		}
+		if ( card.value == this.level ) {
+			return true;
+		}
+		return false;
+	}
+	
+	/**
+	 * Determines who wins this trick. Only works if the trick is valid! All
+	 * hands played must be correct. For example, this assumes that everyone
+	 * played the same number of cards and that the number of cards played by
+	 * each person is positive.
+	 * 
+	 * Furthermore, all hands must already be sorted in the same, consistent
+	 * order (highest to lowest). This will not be a problem if you do not
+	 * change the order in which cards were placed in hands by the dealing
+	 * functions.
+	 */
+	this.determineTrickWinner = function() {
+		var leaderIdx = this.leaderNameToidx( this.leader );
+		var winner = leaderIdx;
+		var winningHand = this.firstHand;
+		
+		if ( this.type == TrickTypes.SINGLE ) {
+			
+			//start with whomever comes after the leader and continue comparing
+			//hands in counter-clockwise order until we reach the leader again
+			for ( var i = (leaderIdx+1) % 4 ; i != leaderIdx ; i = (i+1) % 4 ) {
+				var handToConsider = this.hands[ i ];
+				
+				var cardPlayed = handToConsider.get( 0 );
+				var winningCard = winningHand.get( 0 );
+				if ( cardPlayed.compareToByDeclared( winningCard , 
+										this.level , this.trumpSuit ) > 0 ) {
+					winningHand = handToConsider;
+					winner = i;
+				}
+			}
+		}
+		else if ( this.type == TrickTypes.PAIR ) {
+			for ( var i = (leaderIdx+1) % 4 ; i != leaderIdx ; i = (i+1) % 4 ) {
+				var handToConsider = this.hands[ i ];
+				
+				if ( isPair( handToConsider ) ) {
+					var pairCard = handToConsider.get( 0 );
+					var winningPairCard = winningHand.get( 0 );
+					if ( pairCard.compareToByDeclared( winningCard , 
+										this.level , this.trumpSuit ) > 0 ) {
+						winningHand = handToConsider;
+						winner = i;
+					}
+				}
+			}
+		}
+		else if ( this.type == TrickTypes.TRACTOR ) {
+			for ( var i = (leaderIdx+1) % 4 ; i != leaderIdx ; i = (i+1) % 4 ) {
+				var handToConsider = this.hands[ i ];
+				
+				if ( isTractor( handToConsider ) ) {
+					var tractorCard = handToConsider.get( 0 );
+					var winningPairCard = winningHand.get( 0 );
+					if ( tractorCard.compareToByDeclared( winningCard , 
+										this.level , this.trumpSuit ) > 0 ) {
+						winningHand = handToConsider;
+						winner = i;
+					}
+				}
+			}
+		}
+		else if ( this.type == TrickTypes.DUMP ) {
+			
+			//if a player has been able to dump cards, then he must have
+			//the highest cards in that suit. therefore, we only care about
+			//trumping. if a hand we are considering is not all trump, then
+			//it cannot possibly beat the current winning hand
+			
+			for ( var i = (leaderIdx+1) % 4 ; i != leaderIdx ; i = (i+1) % 4 ) {
+				var handToConsider = this.hands[ i ].clone();
+				
+				var isAllTrump = true;
+				for ( var i=0 ; i<handToConsider.size() ; ++i ) {
+					if ( !this.isTrump( handToConsider.get( i ) ) ) {
+						isAllTrump = false;
+						break;
+					}
+				}
+				
+				if ( !isAllTrump ) {
+					continue;
+				}
+				
+				//check that the hand played meets all the combination
+				//requirements of the leading hand
+				var firstHandCpy = this.firstHand.clone();
+				
+				var nextTractor = removeTractorFrom( firstHandCpy );
+				while( nextTractor.size() > 0 ) {
+					if ( removeTractorLengthFrom( handToConsider , 
+											nextTractor.size() ).size() == 0 ) {
+						
+						//insufficient number of tractors => fail
+						continue;
+					}
+					nextTractor = removeTractorFrom( firstHandCpy );
+				}
+				
+				var nextPair = removePairFrom( firstHandCpy );
+				while( nextPair.size() > 0 ) {
+					if ( removePairFrom( handToConsider ).size() == 0 ) {
+						
+						//insufficient number of pairs => fail
+						continue;
+					}
+					nextPair = removePairFrom( firstHandCpy );
+				}
+				
+				var nextSingle = removeSingleFrom( firstHandCpy );
+				while( nextSingle.size() > 0 ) {
+					if ( removeSingleFrom( handToConsider ).size() == 0 ) {
+						
+						//insufficient number of singles => fail
+						continue;
+					}
+					nextSingle = removeSingleFrom( firsthandCpy );
+				}
+			}
+			
+			//now that we know the hand to consider has met all combination
+			//requirements, we just find the rarest combination and compare
+			//the best of those, and whichever hand has the higher one wins
+			
+			//for example, if the leading hand had a tractor, whichever hand
+			//has the higher tractor wins - all other combinations are
+			//disregarded
+			
+			//if the leading hand had no tractors, but it had a pair, then
+			//whichever hand has the highest pair wins - all singles are 
+			//disregarded
+			firstHandCopy = this.firstHand.clone();
+			var winningHandCpy = this.winningHand.clone();
+			handToConsider = this.hands[ i ].clone();
+			
+			nextTractor = removeTractorFrom( winningHandCpy );
+			if ( nextTractor.size() > 0 ) {
+				var bestWinningTractor = removeTractorLengthFrom( 
+										winningHandCpy , nextTractor.size() );
+				var bestConsideredTractor = removeTractorLengthFrom( 
+										handToConsider , nextTractor.size() );
+				
+				if ( bestConsideredTractor.get( 0 ).compareToByDeclared( 
+						bestWinningTractor.get( 0 ) , this.level , 
+														this.trumpSuit ) > 0 ) {
+					winningHand = this.hands[ i ];
+					winner = i;
+				}
+				continue;
+			}
+			
+			nextPair = removePairFrom( winningHandCpy );
+			if ( nextPair.size() > 0 ) {
+				var bestWinningPair = removePairFrom( winningHandCpy );
+				var winningPairCard = bestWinningPair.get( 0 );
+				var bestConsideredPair = removePairFrom( handToConsider );
+				var consideredPairCard = bestConsideredPair.get( 0 );
+				
+				if ( consideredPairCard.compareToByDeclared( winningPairCard , 
+										this.level , this.trumpSuit ) > 0 ) {
+					winningHand = this.hands[ i ];
+					winner = i;
+				}
+				continue;
+			}
+			
+			//if this code is reached, then the dump was all singles, so
+			//we just compare the highest card in each hand
+			var bestWinningCard = winningHandCpy.get( 0 );
+			var bestConsideredCard = handToConsider.get( 0 );
+			if ( bestConsideredCard.compareToByDeclared( bestWinningCard , 
+										this.level , this.trumpSuit ) > 0 ) {
+				winningHand = this.hands[ i ];
+				winner = i;
+			}
+		}
+	}
 }
 
-
+/*
 //Unit Tests:
 //Reminder: constructor for Card is Card( suit , value ) not
 //Card( value , suit )

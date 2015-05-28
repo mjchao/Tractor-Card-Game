@@ -435,11 +435,12 @@ function Trick( level , trumpSuit , firstHand , leader ) {
 			for ( var i = (leaderIdx+1) % 4 ; i != leaderIdx ; i = (i+1) % 4 ) {
 				var handToConsider = this.hands[ i ];
 				
-				if ( isTractor( handToConsider ) ) {
+				if ( isTractor( handToConsider , this.level ,
+															this.trumpSuit) ) {
 					var tractorCard = handToConsider.get( 0 );
-					var winningPairCard = winningHand.get( 0 );
+					var winningCard = winningHand.get( 0 );
 					if ( this.isTrump( tractorCard ) || 
-							tractorCard.suit == winningPairCard.suit ) {
+							tractorCard.suit == winningCard.suit ) {
 						if ( tractorCard.compareToByDeclared( winningCard , 
 										this.level , this.trumpSuit ) > 0 ) {
 							winningHand = handToConsider;
@@ -566,6 +567,7 @@ function Trick( level , trumpSuit , firstHand , leader ) {
 		
 		return this.playerIdxToName( winner );
 	}
+	return -1;
 }
 
 
@@ -1388,5 +1390,128 @@ testTrick.setCardsPlayed( "E" , eHand );
 testTrick.setCardsPlayed( "S" , sHand );
 testTrick.setCardsPlayed( "W" , wHand );
 assert( testTrick.determineWinner() == "E" );
+
+//test tractors
+nHand.clear();
+nHand.addCard( new Card( 1 , 2 ) );
+nHand.addCard( new Card( 1 , 2 ) );
+nHand.addCard( new Card( 1 , 3 ) );
+nHand.addCard( new Card( 1 , 3 ) );
+eHand.clear();
+eHand.addCard( new Card( 1 , 4 ) );
+eHand.addCard( new Card( 1 , 4 ) );
+eHand.addCard( new Card( 1 , 5 ) );
+eHand.addCard( new Card( 1 , 5 ) );
+sHand.clear();
+sHand.addCard( new Card( 1 , 10 ) );
+sHand.addCard( new Card( 1 , 10 ) ); //note: 10 is trump since level is 10!
+sHand.addCard( new Card( 1 , 11 ) );
+sHand.addCard( new Card( 1 , 11 ) );
+wHand.clear();
+wHand.addCard( new Card( 1 , 11 ) );
+wHand.addCard( new Card( 1 , 12 ) );
+wHand.addCard( new Card( 1 , 12 ) );
+wHand.addCard( new Card( 1 , 13 ) );
+testTrick = new Trick( 10 , 5 , nHand , "N" );
+testTrick.setCardsPlayed( "E" , eHand );
+testTrick.setCardsPlayed( "S" , sHand );
+testTrick.setCardsPlayed( "W" , wHand );
+assert( testTrick.determineWinner() == "E" );
+
+nHand.clear();
+nHand.addCard( new Card( 1 , 2 ) );
+nHand.addCard( new Card( 1 , 2 ) );
+nHand.addCard( new Card( 1 , 3 ) );
+nHand.addCard( new Card( 1 , 3 ) );
+nHand.addCard( new Card( 1 , 4 ) );
+nHand.addCard( new Card( 1 , 4 ) );
+eHand.clear();
+eHand.addCard( new Card( 1 , 8 ) );
+eHand.addCard( new Card( 1 , 8 ) );
+eHand.addCard( new Card( 1 , 9 ) );
+eHand.addCard( new Card( 1 , 9 ) );
+eHand.addCard( new Card( 1 , 11 ) );
+eHand.addCard( new Card( 1 , 11 ) );
+sHand.clear();
+sHand.addCard( new Card( 1 , 1 ) );
+sHand.addCard( new Card( 1 , 1 ) );
+sHand.addCard( new Card( 2 , 2 ) );
+sHand.addCard( new Card( 2 , 3 ) );
+sHand.addCard( new Card( 2 , 4 ) );
+sHand.addCard( new Card( 2 , 7 ) );
+wHand.clear();
+wHand.addCard( new Card( 1 , 12 ) );
+wHand.addCard( new Card( 1 , 12 ) );
+wHand.addCard( new Card( 1 , 13 ) );
+wHand.addCard( new Card( 1 , 13 ) );
+wHand.addCard( new Card( 2 , 1 ) );
+wHand.addCard( new Card( 2 , 1 ) );
+testTrick = new Trick( 10 , 5 , nHand , "N" );
+testTrick.setCardsPlayed( "E" , eHand );
+testTrick.setCardsPlayed( "S" , sHand );
+testTrick.setCardsPlayed( "W" , wHand );
+assert( testTrick.determineWinner() == "E" );
+
+//test big tractor gets trumped
+nHand.clear();
+nHand.addCard( new Card( 1 , 2 ) );
+nHand.addCard( new Card( 1 , 2 ) );
+nHand.addCard( new Card( 1 , 3 ) );
+nHand.addCard( new Card( 1 , 3 ) );
+nHand.addCard( new Card( 1 , 4 ) );
+nHand.addCard( new Card( 1 , 4 ) );
+eHand.clear();
+eHand.addCard( new Card( 1 , 8 ) );
+eHand.addCard( new Card( 1 , 8 ) );
+eHand.addCard( new Card( 1 , 9 ) );
+eHand.addCard( new Card( 1 , 9 ) );
+eHand.addCard( new Card( 1 , 11 ) );
+eHand.addCard( new Card( 1 , 11 ) );
+sHand.clear();
+sHand.addCard( new Card( 3 , 12 ) );
+sHand.addCard( new Card( 3 , 12 ) );
+sHand.addCard( new Card( 3 , 1 ) );
+sHand.addCard( new Card( 3 , 1 ) );
+sHand.addCard( new Card( 2 , 10 ) );
+sHand.addCard( new Card( 2 , 10 ) );
+wHand.clear();
+wHand.addCard( new Card( 3 , 10 ) );
+wHand.addCard( new Card( 3 , 10 ) );
+wHand.addCard( new Card( 5 , 0 ) );
+wHand.addCard( new Card( 5 , 0 ) );
+wHand.addCard( new Card( 6 , 0 ) );
+wHand.addCard( new Card( 6 , 0 ) );
+testTrick = new Trick( 10 , 3 , nHand , "N" );
+testTrick.setCardsPlayed( "E" , eHand );
+testTrick.setCardsPlayed( "S" , sHand );
+testTrick.setCardsPlayed( "W" , wHand );
+assert( testTrick.determineWinner() == "W" );
+
+//test tractor is unopposed
+nHand.clear();
+nHand.addCard( new Card( 1 , 2 ) );
+nHand.addCard( new Card( 1 , 2 ) );
+nHand.addCard( new Card( 1 , 3 ) );
+nHand.addCard( new Card( 1 , 3 ) );
+eHand.clear();
+eHand.addCard( new Card( 1 , 8 ) );
+eHand.addCard( new Card( 1 , 9 ) );
+eHand.addCard( new Card( 1 , 11 ) );
+eHand.addCard( new Card( 1 , 12 ) );
+sHand.clear();
+sHand.addCard( new Card( 3 , 12 ) );
+sHand.addCard( new Card( 3 , 12 ) );
+sHand.addCard( new Card( 3 , 1 ) );
+sHand.addCard( new Card( 3 , 1 ) );
+wHand.clear();
+wHand.addCard( new Card( 3 , 10 ) );
+wHand.addCard( new Card( 3 , 10 ) );
+wHand.addCard( new Card( 5 , 0 ) );
+wHand.addCard( new Card( 5 , 0 ) );
+testTrick = new Trick( 10 , 4 , nHand , "N" );
+testTrick.setCardsPlayed( "E" , eHand );
+testTrick.setCardsPlayed( "S" , sHand );
+testTrick.setCardsPlayed( "W" , wHand );
+assert( testTrick.determineWinner() == "N" );
 
 console.log( "Tests finished" );

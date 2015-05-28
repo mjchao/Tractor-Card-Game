@@ -1189,6 +1189,36 @@ testTrick.setCardsPlayed( "W" , wHand );
 testTrick.setCardsPlayed( "N" , nHand );
 assert( testTrick.determineWinner() == "E" );
 
+//test for jokers
+nHand.clear();
+nHand.addCard( new Card( 5 , 0 ) );
+eHand.clear();
+eHand.addCard( new Card( 2 , 4 ) );
+sHand.clear();
+sHand.addCard( new Card( 3 , 3 ) );
+wHand.clear();
+wHand.addCard( new Card( 3 , 1 ) );
+testTrick = new Trick( 10 , 4 , eHand , "E" );
+testTrick.setCardsPlayed( "S" , sHand );
+testTrick.setCardsPlayed( "W" , wHand );
+testTrick.setCardsPlayed( "N" , nHand );
+assert( testTrick.determineWinner() == "N" );
+
+nHand.clear();
+nHand.addCard( new Card( 5 , 0 ) );
+eHand.clear();
+eHand.addCard( new Card( 2 , 4 ) );
+sHand.clear();
+sHand.addCard( new Card( 3 , 3 ) );
+wHand.clear();
+wHand.addCard( new Card( 6 , 0 ) );
+testTrick = new Trick( 10 , 4 , eHand , "E" );
+testTrick.setCardsPlayed( "S" , sHand );
+testTrick.setCardsPlayed( "W" , wHand );
+testTrick.setCardsPlayed( "N" , nHand );
+assert( testTrick.determineWinner() == "W" );
+
+
 //test pairs
 
 //test discards
@@ -1317,6 +1347,43 @@ wHand.clear();
 wHand.addCard( new Card( 3 , 2 ) );
 wHand.addCard( new Card( 3 , 2 ) );
 testTrick = new Trick( 1 , 2 , nHand , "N" );
+testTrick.setCardsPlayed( "E" , eHand );
+testTrick.setCardsPlayed( "S" , sHand );
+testTrick.setCardsPlayed( "W" , wHand );
+assert( testTrick.determineWinner() == "E" );
+
+//test winning with jokers
+nHand.clear();
+nHand.addCard( new Card( 1 , 2 ) );
+nHand.addCard( new Card( 1 , 2 ) );
+eHand.clear();
+eHand.addCard( new Card( 1 , 4 ) );
+eHand.addCard( new Card( 1 , 4 ) );
+sHand.clear();
+sHand.addCard( new Card( 5 , 0 ) );
+sHand.addCard( new Card( 5 , 0 ) );
+wHand.clear();
+wHand.addCard( new Card( 6 , 0 ) );
+wHand.addCard( new Card( 6 , 0 ) );
+testTrick = new Trick( 10 , 5 , nHand , "N" );
+testTrick.setCardsPlayed( "E" , eHand );
+testTrick.setCardsPlayed( "S" , sHand );
+testTrick.setCardsPlayed( "W" , wHand );
+assert( testTrick.determineWinner() == "W" );
+
+nHand.clear();
+nHand.addCard( new Card( 1 , 2 ) );
+nHand.addCard( new Card( 1 , 2 ) );
+eHand.clear();
+eHand.addCard( new Card( 1 , 4 ) );
+eHand.addCard( new Card( 1 , 4 ) );
+sHand.clear();
+sHand.addCard( new Card( 5 , 0 ) );
+sHand.addCard( new Card( 6 , 0 ) );
+wHand.clear();
+wHand.addCard( new Card( 6 , 0 ) );
+wHand.addCard( new Card( 5 , 0 ) );
+testTrick = new Trick( 10 , 5 , nHand , "N" );
 testTrick.setCardsPlayed( "E" , eHand );
 testTrick.setCardsPlayed( "S" , sHand );
 testTrick.setCardsPlayed( "W" , wHand );

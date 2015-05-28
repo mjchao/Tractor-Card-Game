@@ -7,6 +7,7 @@ function RoundData( level , starter ) {
 	this.starter = starter;
 	this.declared = 0;
 	this.overriden = false;
+	this.points = 0;
 	
 	this.handDec = new Hand();
 	this.handDec.visible = true;
@@ -421,6 +422,13 @@ function Round( level , starter ) {
 		
 		pnlCenter.innerHTML = "";
 		var dispC = new HandDisplay( this.roundData.handDec , player );
+		dispC.renderCenter( pnlCenter );
+	}
+	
+	this.showPlayedCards = function( player , handPlayed ) {
+		var pnlCenter = document.getElementById( "pnlCenter" );
+		handPlayed.renderDealingOffsets( this.roundData.level );
+		var dispC = new HandDisplay( handPlayed , player );
 		dispC.renderCenter( pnlCenter );
 	}
 	//*/

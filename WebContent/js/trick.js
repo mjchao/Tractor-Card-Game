@@ -214,6 +214,11 @@ function Trick( level , trumpSuit , firstHand , leader ) {
 	//this maintains the counter-clockwise order
 	this.hands = [ undefined , undefined , undefined , undefined ];
 	
+	this.finished = function() {
+		return this.hands[ 0 ] != undefined && this.hands[ 1 ] != undefined && 
+				this.hands[ 2 ] != undefined && this.hands[ 3 ] != undefined;
+	}
+	
 	this.setCardsPlayed = function( player , cardsPlayed ) {
 		var idx = -1;
 		if ( player == "N" ) {

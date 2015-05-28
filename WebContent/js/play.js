@@ -1,4 +1,4 @@
-var round = new Round( 2 , "S" );
+var round = new Round( 2 , "N" );
 var pnlDeclare = document.getElementById( "pnlDeclare" );
 var pnlBottom = document.getElementById( "pnlBottom" );
 var pnlPlay = document.getElementById( "pnlPlay" );
@@ -121,6 +121,7 @@ function showBottomCommands() {
 		}
 		else {
 			pnlPlay.style.visibility = "visible";
+			processBottom();
 		}
 	}
 }
@@ -165,6 +166,7 @@ function processBottom() {
 			pnlBottom.style.visibility = "hidden";
 			pnlPlay.style.visibility = "visible";
 			round.renderDeclaredHands();
+			beginPlay();
 		}
 		else {
 			alert( "You have selected " + numCardsSelected + 
@@ -173,6 +175,7 @@ function processBottom() {
 	}
 	else {
 		//TODO AI moves 8 cards to bottom
+		beginPlay();
 	}
 }
 
@@ -208,12 +211,152 @@ function flipNoTrump() {
 	round.tryDeclare( "S" , 5 );
 }
 
+var trick = undefined;
+var northAI = new AI( new AIData( round.handN ) );
+var eastAI = new AI( new AIData( round.handE ) );
+var westAI = new AI( new AIData( round.handW ) );
+
+function playerIdxToName( idx ) {
+	if ( idx == 0 ) {
+		return "S";
+	}
+	else if ( idx == 1 ) {
+		return "W";
+	}
+	else if ( idx == 2 ) {
+		return "N";
+	}
+	else if ( idx == 3 ) {
+		return "E";
+	}
+	return "?";
+}
+
+function playerNameToIdx( name ) {
+	if ( name == "N" ) {
+		return 2;
+	}
+	else if ( name == "S" ) {
+		return 0;
+	}
+	else if ( name == "E" ) {
+		return 3;
+	}
+	else if ( name == "W" ) {
+		return 1;
+	}
+	return -1;
+}
+
+/**
+ * Plays the selected cards in the given player's hand
+ * 
+ * @param playerIdx the index of the player (0-3)
+ * @param playerEntireHand the entire hand of the player who is playing some
+ * cards. the selected cards will be filtered out by this function
+ */
+function playSelectedCards( playerIdx , playerEntireHand ) {
+	var handPlayed = new Hand( true , true );
+	
+	//TODO code is not robust :(
+	if ( playerIdx == 1 || playerIdx == 3 ) {
+		handPlayed = new Hand( false , true );
+	}
+	for ( var i=0 ; i<playerEntireHand.size() ; ++i ) {
+		if ( playerEntireHand.get( i ).selected ) {
+			handPlayed.addCard( playerEntireHand.get( i ) );
+			playerEntireHand.removeAt( i );
+			--i;
+		}
+	}
+	round.showPlayedCards( playerIdxToName( playerIdx ) , handPlayed );
+	
+	if ( trick == undefined ) {
+		trick = new Trick( round.roundData.level , round.roundData.declared , 
+									handPlayed , playerIdxToName( playerIdx ) );
+	}
+	else {
+		trick.setCardsPlayed( playerIdxToName( playerIdx ) , handPlayed );
+	}
+}
+
+function aiMakeMove( aiIdx ) {
+	var ai = undefined;
+	if ( aiIdx == 1 ) {
+		ai = westAI;
+	}
+	else if ( aiIdx == 2 ) {
+		ai = northAI;
+	}
+	else if ( aiIdx == 3 ) {
+		ai = eastAI;
+	}
+	if ( trick == undefined ) {
+		ai.lead();
+	}
+	else {
+		ai.play( round , trick );
+	}
+	console.log( "AI " + aiIdx + "makes move" );
+	playSelectedCards( aiIdx , ai.data.hand );
+}
+
+//the next person to play some cards in the trick
+var currIdx = -1;
+
+function beginPlay() {
+	document.getElementById( "cmdNextTrick" ).setAttribute( 
+												"class" , "commandDisabled" );
+	var starter = round.roundData.starter;
+	if ( starter == "N" ) {
+		currIdx = 2;
+	}
+	else if ( starter == "S" ) {
+		currIdx = 0;
+	}
+	else if ( starter == "E" ) {
+		currIdx = 3;
+	}
+	else if ( starter == "W" ) {
+		currIdx = 1;
+	}
+	play();
+}
+
+function play() {
+	while( currIdx != 0 && (trick == undefined || !trick.finished()) ) {
+		aiMakeMove( currIdx );
+		currIdx = ( currIdx + 1 ) % 4;
+	}
+	if ( trick == undefined || trick.finished() ) {
+		if ( currIdx != 0 ) {
+			document.getElementById( "cmdNextTrick" ).setAttribute( 
+														"class" , "command" );
+		}
+	}
+}
+
 function playSelected() {
-	//TODO
+	document.getElementById( "cmdPlayTrick" ).setAttribute( 
+												"class" , "commandDisabled" );
+	playSelectedCards( 0 , round.handS );
+	++currIdx;
+	play();
 }
 
 function startNextTrick() {
-	//TODO
+	if ( trick.finished() ) {
+		document.getElementById( "cmdNextTrick" ).setAttribute( 
+				"class" , "commandDisabled" );
+		document.getElementById( "cmdPlayTrick" ).setAttribute( 
+						"class" , "command" );
+		document.getElementById( "pnlCenter" ).innerHTML = "";
+		var winner = trick.determineWinner();
+		var idx = playerNameToIdx( winner );
+		currIdx = idx;
+		trick = undefined;
+		play();
+	}
 }
 
 document.getElementById( "cmdDeal" ).onclick = deal;

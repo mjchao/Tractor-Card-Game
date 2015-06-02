@@ -1253,7 +1253,6 @@ testTrick.setCardsPlayed( "W" , wHand );
 testTrick.setCardsPlayed( "N" , nHand );
 assert( testTrick.determineWinner() == "N" );
 
-//FIXME
 //test for trump vs. non-trump dominant cards
 nHand.clear();
 nHand.addCard( new Card( 1 , 2 ) );

@@ -373,7 +373,8 @@ function Trick( level , trumpSuit , firstHand , leader ) {
 				}
 			}
 			else {
-				if ( hand.get( i ).suit == this.suit ) {
+				if ( hand.get( i ).suit == this.suit && 
+						hand.get( i ).value != level ) {
 					subhand.addCard( hand.get( i ) );
 				}
 			}

@@ -4,6 +4,7 @@ var round = new Round( 2 , "?" );
 var pnlDeclare = document.getElementById( "pnlDeclare" );
 var pnlBottom = document.getElementById( "pnlBottom" );
 var pnlPlay = document.getElementById( "pnlPlay" );
+var pnlNextRound = document.getElementById( "pnlNextRound" );
 
 function checkAIDeclare( ai , player , hand ) {
 
@@ -204,6 +205,7 @@ function processDealingComplete() {
 		"hidden";
 	document.getElementById( "cmdFlipBottomNext" ).style.visibility = 
 		"visible";
+	updateRoundStats();
 }
 
 
@@ -632,8 +634,7 @@ function scoreBottom() {
 
 function startNextRound() {
 	if ( document.getElementById( 
-					"pnlNextRound" ).getAttribute( "class" ) == "command" ) {
-		//TODO start next round
+					"cmdNextRound" ).getAttribute( "class" ) == "command" ) {
 		var defenders = "??";
 		if ( round.starter == "N" || round.starter == "S" ) {
 			defenders = "NS";
@@ -642,6 +643,110 @@ function startNextRound() {
 			defenders = "EW";
 		}
 		
+		if ( round.roundData.points > 80 ) {
+			var extraLevels = Math.floor( (round.roundData.points - 80)/40 );
+			if ( defenders = "NS" ) {
+				ewLevel += extraLevels;
+				var nextStarter;
+				if ( round.roundData.starter == "N" ) {
+					nextStarter = "E";
+				}
+				else {
+					nextStarter = "W";
+				}
+				round = new Round( ewLevel , nextStarter );
+			}
+			else if ( defenders == "EW" ) {
+				nsLevel += extraLevels;
+				var nextStarter;
+				if ( round.roundData.starter == "E" ) {
+					nextStarter = "S";
+				}
+				else {
+					nextStarter = "N";
+				}
+				round = new Round( nsLevel , nextStarter );
+			}
+		}
+		else {
+			var extraLevels = Math.floor( (80 - round.roundData.points)/40 );
+
+			var nextStarter;
+			if ( round.roundData.starter == "N" ) {
+				nextStarter = "S";
+			}
+			else if ( round.roundData.starter == "S" ) {
+				nextStarter = "N";
+			}
+			else if ( round.roundData.starter == "E" ) {
+				nextStarter = "E";
+			}
+			else if ( round.roundData.starter == "W" ) {
+				nextStarter = "W";
+			}
+			
+			if ( defenders == "NS" ) {
+				nsLevel += extraLevels;
+				round = new Round( nsLevel , nextStarter );
+			}
+			else if ( defenders == "EW" ) {
+				ewLevel += extraLevels;
+				round = new Round( ewLevel , nextStarter );
+			}
+		}
+		
+		updateRoundStats();
+		pnlNextRound.style.visibility = "hidden";
+		pnlBottom.style.visibility = "hidden";
+		pnlPlay.style.visibility = "hidden";
+		pnlDeclare.style.visbility = "visible";
+		document.getElementById( "cmdSpades" ).style.visibility = "visible";
+		document.getElementById( "cmdHearts" ).style.visibility = "visible";
+		document.getElementById( "cmdClubs" ).style.visibility = "visible";
+		document.getElementById( "cmdDiamonds" ).style.visibility = "visible";
+		document.getElementById( "cmdNoTrump" ).style.visibility = "visible";
+		document.getElementById( "cmdDeal" ).style.visibility = "visible";
+		document.getElementById( "cmdFlipBottom" ).style.visibility = "visible";
+		document.getElementById( "cmdFlipBottomNext" ).style.visibility = "visible";
+	}
+}
+
+function updateRoundStats() {
+	document.getElementById( "txtLevelNS" ).setAttribute( "class" , "" );
+	document.getElementById( "txtLevelEW" ).setAttribute( "class" , "" );
+	document.getElementById( "txtNorth" ).setAttribute( "class" , "" );
+	document.getElementById( "txtSouth" ).setAttribute( "class" , "" );
+	document.getElementById( "txtEast" ).setAttribute( "class" , "" );
+	document.getElementById( "txtWest" ).setAttribute( "class" , "" );
+	document.getElementById( "lvlNS" ).innerHTML = nsLevel;
+	document.getElementById( "lvlEW" ).innerHTML = ewLevel;
+	document.getElementById( "txtPoints" ).innerHTML = "Points: 0";
+	var defenders = "??";
+	if ( round.starter == "N" || round.starter == "S" ) {
+		defenders = "NS";
+	}
+	else if ( round.starter == "E" || round.starter == "W" ) {
+		defenders = "EW";
+	}
+	if ( defenders == "NS" ) {
+		document.getElementById( "txtLevelNS" ).setAttribute( 
+														"class" , "defender" );
+	}
+	else if ( defenders == "EW" ) {
+		document.getElementById( "txtLevelEW" ).setAttribute( 
+														"class" , "defender" );
+	}
+	if ( round.starter == "N" ) {
+		document.getElementById( "txtNorth" ).setAttribute( "class" , "leader" );
+	}
+	else if ( round.starter == "S" ) {
+		document.getElementById( "txtSouth" ).setAttribute( "class" , "leader" );
+	}
+	else if ( round.starter == "E" ) {
+		document.getElementById( "txtEast" ).setAttribute( "class" , "leader" );
+	}
+	else if ( round.starter == "W" ) {
+		document.getElementById( "txtWest" ).setAttribute( "class" , "leader" );
 	}
 }
 

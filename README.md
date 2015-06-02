@@ -54,3 +54,9 @@ The remaining eight cards not dealt are called the *bottom*. These cards are see
 
 ##Winning the Bottom
 Whoever wins the last trick *wins the bottom.* If the defenders win the bottom, then nothing happens. If the attackers win the bottom, there is a point penalty for the defenders equivalent to the number of points in the bottom times two to the power of the number of cards played in the last trick. For example, if the bottom had five points and the attackers won the last trick with two cards, they would gain an additional twenty points.
+
+##Trumps
+If at any point you are void of a suit, you may use *trump* cards to win a trick. The trump suit is determined while dealing. To trump some cards, you must play a hand that has the same combinations as the non-trump suit, except with trump suit cards. For example, if somebody played a pair of Js, you would have to use a trump pair to beat it. Any trump pair, however, will work, such as a pair of 4s, although the 4s are lower than the Js. 
+
+##Determining the Trump Cards
+The four jokers (two big and two small) are always trump cards. They are higher in power than every other card. In addition, for each level, the cards of that level are automatically promoted to trump status. These cards are called the *dominant* cards. For example, if team North-South were defending on level 3, all 3s would automatically become dominant cards. Only jokers can beat the dominant cards, and all dominant cards are of the same power (i.e. whichever one played first in a trick wins).

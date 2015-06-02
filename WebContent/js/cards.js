@@ -210,6 +210,47 @@ function Card( suit , value ) {
 		}
 		return this.compareToByLevel( card , level );
 	}
+	
+	/**
+	 * Compares this card to another card assuming that the other card
+	 * was played before this card.
+	 */
+	this.compareToWithPlayOrder = function( card , level , declaredSuit ) {
+		if ( this.suit > 4 ) {
+			return this.suit - card.suit;
+		}
+		
+		//check if the card's value is of the current level
+		if ( this.value == level ) {
+			if ( card.suit > 4 ) {
+				return -1;
+			}
+			if ( card.value == level ) {
+				if ( this.suit == declaredSuit && card.suit != declaredSuit ) {
+					return 1;
+				}
+				else {
+					return -1;
+				}
+			}
+			return 1;
+		}
+		
+		if ( this.suit == declaredSuit ) {
+			if ( card.suit > 4 || card.value == level ) {
+				return -1;
+			}
+			if ( card.suit == declaredSuit ) {
+				return this.compareToByValue( card );
+			}
+			return 1;
+		}
+		
+		if ( card.suit == declaredSuit ) {
+			return -1;
+		}
+		return this.compareToByLevel( card , level );
+	}
 }
 
 function CardComparatorForHands( level ) {

@@ -405,7 +405,7 @@ function Trick( level , trumpSuit , firstHand , leader ) {
 				var winningCard = winningHand.get( 0 );
 				if ( this.isTrump( cardPlayed ) || 
 										cardPlayed.suit == winningCard.suit ) {
-					if ( cardPlayed.compareToByDeclared( winningCard , 
+					if ( cardPlayed.compareToWithPlayOrder( winningCard , 
 										this.level , this.trumpSuit ) > 0 ) {
 						winningHand = handToConsider;
 						winner = i;
@@ -422,7 +422,7 @@ function Trick( level , trumpSuit , firstHand , leader ) {
 					var winningPairCard = winningHand.get( 0 );
 					if ( this.isTrump( pairCard ) || 
 									pairCard.suit == winningPairCard.suit ) {
-						if ( pairCard.compareToByDeclared( winningPairCard , 
+						if ( pairCard.compareToWithPlayOrder( winningPairCard , 
 										this.level , this.trumpSuit ) > 0 ) {
 							winningHand = handToConsider;
 							winner = i;
@@ -441,7 +441,7 @@ function Trick( level , trumpSuit , firstHand , leader ) {
 					var winningCard = winningHand.get( 0 );
 					if ( this.isTrump( tractorCard ) || 
 							tractorCard.suit == winningCard.suit ) {
-						if ( tractorCard.compareToByDeclared( winningCard , 
+						if ( tractorCard.compareToWithPlayOrder( winningCard , 
 										this.level , this.trumpSuit ) > 0 ) {
 							winningHand = handToConsider;
 							winner = i;
@@ -547,7 +547,7 @@ function Trick( level , trumpSuit , firstHand , leader ) {
 									handToConsider , nextTractor.size() , 
 												this.level , this.trumpSuit );
 					
-					if ( bestConsideredTractor.get( 0 ).compareToByDeclared( 
+					if ( bestConsideredTractor.get( 0 ).compareToWithPlayOrder( 
 							bestWinningTractor.get( 0 ) , this.level , 
 													this.trumpSuit ) > 0 ) {
 						winningHand = this.hands[ i ];
@@ -563,7 +563,7 @@ function Trick( level , trumpSuit , firstHand , leader ) {
 					var bestConsideredPair = removePairFrom( handToConsider );
 					var consideredPairCard = bestConsideredPair.get( 0 );
 					
-					if ( consideredPairCard.compareToByDeclared( 
+					if ( consideredPairCard.compareToWithPlayOrder( 
 											winningPairCard , this.level , 
 														this.trumpSuit ) > 0 ) {
 						winningHand = this.hands[ i ];
@@ -576,7 +576,7 @@ function Trick( level , trumpSuit , firstHand , leader ) {
 				//we just compare the highest card in each hand
 				var bestWinningCard = winningHandCpy.get( 0 );
 				var bestConsideredCard = handToConsider.get( 0 );
-				if ( bestConsideredCard.compareToByDeclared( bestWinningCard , 
+				if ( bestConsideredCard.compareToWithPlayOrder( bestWinningCard , 
 										this.level , this.trumpSuit ) > 0 ) {
 					winningHand = this.hands[ i ];
 					winner = i;
@@ -589,7 +589,7 @@ function Trick( level , trumpSuit , firstHand , leader ) {
 	return -1;
 }
 
-/*
+
 //Unit Tests:
 //Reminder: constructor for Card is Card( suit , value ) not
 //Card( value , suit )
@@ -1233,6 +1233,51 @@ sHand.addCard( new Card( 3 , 3 ) );
 wHand.clear();
 wHand.addCard( new Card( 6 , 0 ) );
 testTrick = new Trick( 10 , 4 , eHand , "E" );
+testTrick.setCardsPlayed( "S" , sHand );
+testTrick.setCardsPlayed( "W" , wHand );
+testTrick.setCardsPlayed( "N" , nHand );
+assert( testTrick.determineWinner() == "W" );
+
+//test for jokers
+nHand.clear();
+nHand.addCard( new Card( 5 , 0 ) );
+eHand.clear();
+eHand.addCard( new Card( 2 , 4 ) );
+sHand.clear();
+sHand.addCard( new Card( 3 , 3 ) );
+wHand.clear();
+wHand.addCard( new Card( 3 , 1 ) );
+testTrick = new Trick( 10 , 4 , eHand , "E" );
+testTrick.setCardsPlayed( "S" , sHand );
+testTrick.setCardsPlayed( "W" , wHand );
+testTrick.setCardsPlayed( "N" , nHand );
+assert( testTrick.determineWinner() == "N" );
+
+//FIXME
+//test for trump vs. non-trump dominant cards
+nHand.clear();
+nHand.addCard( new Card( 1 , 2 ) );
+eHand.clear();
+eHand.addCard( new Card( 2 , 2 ) );
+sHand.clear();
+sHand.addCard( new Card( 3 , 2 ) );
+wHand.clear();
+wHand.addCard( new Card( 1 , 2 ) );
+testTrick = new Trick( 2 , 4 , eHand , "N" );
+testTrick.setCardsPlayed( "E" , sHand );
+testTrick.setCardsPlayed( "S" , wHand );
+testTrick.setCardsPlayed( "W" , nHand );
+assert( testTrick.determineWinner() == "N" );
+
+nHand.clear();
+nHand.addCard( new Card( 1 , 2 ) );
+eHand.clear();
+eHand.addCard( new Card( 2 , 2 ) );
+sHand.clear();
+sHand.addCard( new Card( 3 , 2 ) );
+wHand.clear();
+wHand.addCard( new Card( 5 , 2 ) );
+testTrick = new Trick( 2 , 4 , eHand , "E" );
 testTrick.setCardsPlayed( "S" , sHand );
 testTrick.setCardsPlayed( "W" , wHand );
 testTrick.setCardsPlayed( "N" , nHand );

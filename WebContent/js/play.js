@@ -355,6 +355,26 @@ function playSelectedCards( playerIdx , playerEntireHand ) {
 	for ( var i=0 ; i<playerEntireHand.size() ; ++i ) {
 		if ( playerEntireHand.get( i ).selected ) {
 			handPlayed.addCard( playerEntireHand.get( i ) );
+		}
+	}
+	
+	//check that the hand played is valid
+	if ( trick != undefined && !trick.finished() && 
+			trick.canHandFollow( playerEntireHand ) && 
+			!trick.canHandFollow( handPlayed ) ) {
+		
+		//TODO more informative error messages
+		if ( playerIdx == 0 ) {
+			alert( "The hand played is invalid." );
+		}
+		else {
+			throw "AI played invalid hand. Please restart :(";
+		}
+		return false ;
+	}
+	
+	for ( var i=0 ; i<playerEntireHand.size() ; ++i ) {
+		if ( playerEntireHand.get( i ).selected ) {
 			playerEntireHand.removeAt( i );
 			--i;
 		}
@@ -368,6 +388,7 @@ function playSelectedCards( playerIdx , playerEntireHand ) {
 	else {
 		trick.setCardsPlayed( playerIdxToName( playerIdx ) , handPlayed );
 	}
+	return true;
 }
 
 function aiMakeMove( aiIdx ) {
@@ -388,7 +409,7 @@ function aiMakeMove( aiIdx ) {
 		ai.play( round , trick );
 	}
 	console.log( "AI " + aiIdx + "makes move" );
-	playSelectedCards( aiIdx , ai.data.hand );
+	return playSelectedCards( aiIdx , ai.data.hand );
 }
 
 //the next person to play some cards in the trick
@@ -442,25 +463,29 @@ function play() {
 function playSelected() {
 	if ( document.getElementById( "cmdPlayTrick" ).getAttribute( 
 													"class" ) == "command" ) {
-		document.getElementById( "cmdPlayTrick" ).setAttribute( 
-												"class" , "commandDisabled" );
-		playSelectedCards( 0 , round.handS );
-		++currIdx;
-		if ( trick.finished() ) {
-			if ( round.handS.size() > 0 ) {
-				document.getElementById( "cmdNextTrick" ).setAttribute( 
-														"class" , "command" );
+		var success = playSelectedCards( 0 , round.handS );
+		if ( success ) {
+			++currIdx;
+			if ( trick.finished() ) {
+				if ( round.handS.size() > 0 ) {
+					document.getElementById( "cmdNextTrick" ).setAttribute( 
+															"class" , "command" );
+				}
+				else {
+					document.getElementById( "pnlPlay" ).style.visibility = "hidden";
+					document.getElementById( 
+									"pnlNextRound" ).style.visibility = "visible";
+					document.getElementById( "cmdNextRound" ).setAttribute( 
+													"class" , "commandDisabled" );
+				}
 			}
 			else {
-				document.getElementById( "pnlPlay" ).style.visibility = "hidden";
-				document.getElementById( 
-								"pnlNextRound" ).style.visibility = "visible";
-				document.getElementById( "cmdNextRound" ).setAttribute( 
-												"class" , "commandDisabled" );
+				play();
 			}
 		}
-		else {
-			play();
+		if ( success ) {
+			document.getElementById( "cmdPlayTrick" ).setAttribute( 
+												"class" , "commandDisabled" );
 		}
 	}
 }

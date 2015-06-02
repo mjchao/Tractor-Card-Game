@@ -219,6 +219,10 @@ function Card( suit , value ) {
 	 * compare, and 1 if this card is "greater than" the other card.
 	 */
 	this.compareToWithPlayOrder = function( card , level , declaredSuit ) {
+		if ( this.value == card.value && this.suit == card.suit ) {
+			return -1;
+		}
+		
 		if ( this.suit > 4 ) {
 			return this.suit - card.suit;
 		}

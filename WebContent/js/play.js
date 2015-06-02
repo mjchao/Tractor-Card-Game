@@ -381,21 +381,25 @@ function playSelectedCards( playerIdx , playerEntireHand ) {
 		if ( trick.type == TrickTypes.DUMP ) {
 			var initialSize = handPlayed.size();
 			
-			if ( handPlayed.size() == initialSize && round.handN != playerEntireHand ) {
+			if ( handPlayed.size() == initialSize && playerIdx != 2 ) {
 				handPlayed = canDump( handPlayed , round.handN , 
 							round.roundData.level , round.roundData.declared );
 			}
-			if ( handPlayed.size() == initialSize && round.handS != playerEntireHand ) {
+			if ( handPlayed.size() == initialSize && playerIdx != 0 ) {
 				handPlayed = canDump( handPlayed , round.handS , 
 							round.roundData.level , round.roundData.declared );
 			}
-			if ( handPlayed.size() == initialSize && round.handE != playerEntireHand ) {
+			if ( handPlayed.size() == initialSize && playerIdx != 3 ) {
 				handPlayed = canDump( handPlayed , round.handE , 
 							round.roundData.level , round.roundData.declared );
 			}
-			if ( handPlayed.size() == initialSize && round.handW != playerEntireHand ) {
+			if ( handPlayed.size() == initialSize && playerIdx != 1 ) {
 				handPlayed = canDump( handPlayed , round.handW , 
 							round.roundData.level , round.roundData.declared );
+			}
+			
+			if ( initialSize != handPlayed.size() ) {
+				console.log( "DUMP was bad" );
 			}
 			
 			playerEntireHand.unselectAll();	

@@ -285,10 +285,6 @@ function Round( level , starter ) {
 		}
 		else {
 			this.renderDeclaredHands();
-			if ( this.starter == "?" ) {
-				this.starter = this.roundData.lastDeclarer;
-				this.roundData.starter = this.roundData.lastDeclarer;
-			}
 		}
 		this.updateDeclarationButtons( this.handS );
 	}
@@ -418,6 +414,10 @@ function Round( level , starter ) {
 		//return the cards to the last declarer if any
 		this.returnDeclaredCards();
 		this.roundData.lastDeclarer = player;
+		if ( this.starter == "?" ) {
+			this.starter = this.roundData.lastDeclarer;
+			this.roundData.starter = this.roundData.lastDeclarer;
+		}
 		
 		var hand;
 		var disp;

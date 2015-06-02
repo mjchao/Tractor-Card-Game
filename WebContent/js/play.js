@@ -152,8 +152,11 @@ function addBottomToHand() {
 	else if ( round.roundData.starter == "E" ) {
 		hand = round.handE;
 	}
-	else if ( round.roundData.starter = "W" ) {
+	else if ( round.roundData.starter == "W" ) {
 		hand = round.handW;
+	}
+	else {
+		console.log( round.roundData.starter );
 	}
 	
 	for ( var i=0 ; i<8 ; ++i ) {
@@ -391,6 +394,7 @@ function beginPlay() {
 	document.getElementById( "cmdNextTrick" ).setAttribute( 
 												"class" , "commandDisabled" );
 	var starter = round.roundData.starter;
+	console.log( starter );
 	if ( starter == "N" ) {
 		currIdx = 2;
 	}

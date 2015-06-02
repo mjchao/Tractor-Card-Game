@@ -12,7 +12,7 @@ function RoundData( level , starter ) {
 	this.handDec = new Hand();
 	this.handDec.visible = true;
 	this.handDec.verticalCards = true;
-	this.lastDeclarer = "";
+	this.lastDeclarer = "?";
 	
 	this.isDeclared = function() {
 		return this.declared != 0;
@@ -156,6 +156,7 @@ function Round( level , starter ) {
 	this.bottom.visible = false;
 	this.bottom.verticalCards = true;
 	
+	this.starter = starter;
 	if ( starter == "?" ) {
 		var randomFirstDrawer = getFirstRoundFirstDrawer();
 		this.dealer = new Dealer( this.handN , this.handS , 
@@ -164,7 +165,7 @@ function Round( level , starter ) {
 	}
 	else {
 		this.dealer = new Dealer( this.handN , this.handS , 
-								this.handE , this.handW , this.bottom , starter );
+							this.handE , this.handW , this.bottom , starter );
 		this.dealer.reset( starter );
 	}
 	
@@ -284,6 +285,10 @@ function Round( level , starter ) {
 		}
 		else {
 			this.renderDeclaredHands();
+			if ( this.starter == "?" ) {
+				this.starter = this.roundData.lastDeclarer;
+				this.roundData.starter = this.roundData.lastDeclarer;
+			}
 		}
 		this.updateDeclarationButtons( this.handS );
 	}

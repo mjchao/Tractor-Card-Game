@@ -2134,11 +2134,10 @@ testTrick.setCardsPlayed( "E" , eHand );
 testTrick.setCardsPlayed( "S" , sHand );
 testTrick.setCardsPlayed( "W" , wHand );
 assert( testTrick.determineWinner() == "N" );
-//*/
 
 //CAN DUMP tests
 var playerHand = new Hand();
-/*
+
 //test no contest
 testHand.clear();
 testHand.addCard( new Card( 1 , 1 ) );
@@ -2219,7 +2218,7 @@ playerHand.addCard( new Card( 1 , 12 ) );
 playerHand.addCard( new Card( 1 , 12 ) );
 var result = canDump( testHand , playerHand , 2 , 4 );
 assert( result.size() == 4 );
-assert( result.get( 2 ) == testHand.get( 3 ) );*/
+assert( result.get( 2 ) == testHand.get( 3 ) );
 
 //test equivalent cards
 testHand.clear();
@@ -2239,6 +2238,7 @@ testHand.addCard( new Card( 1 , 1 ) );
 testHand.addCard( new Card( 1 , 12 ) );
 testHand.addCard( new Card( 1 , 12 ) );
 playerHand.clear();
+playerHand.addCard( new Card( 1 , 4 ) );
 playerHand.addCard( new Card( 2 , 3 ) );
 playerHand.addCard( new Card( 2 , 1 ) );
 playerHand.addCard( new Card( 1 , 1 ) );
@@ -2250,3 +2250,4 @@ assert( result.size() == 3 );
 assert( result.get( 0 ) == testHand.get( 0 ) );
 
 console.log( "Tests finished" );
+//*/

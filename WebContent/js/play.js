@@ -465,8 +465,27 @@ function playSelected() {
 	}
 }
 
+function scoreTrick() {
+	var defenders = "??";
+	if ( round.starter == "N" || round.starter == "S" ) {
+		defenders = "NS";
+	}
+	else if ( round.starter == "E" || round.starter == "W" ) {
+		defenders = "EW";
+	}
+	
+	if ( defenders.indexOf( trick.determineWinner() ) == -1 ) {
+		var trickPoints = trick.countPoints();
+		round.roundData.points += trickPoints;
+		document.getElementById( "txtPoints" ).innerHTML = "Points: " + 
+														round.roundData.points;
+	}
+	
+}
+
 function startNextTrick() {
 	if ( trick.finished() ) {
+		scoreTrick();
 		document.getElementById( "cmdNextTrick" ).setAttribute( 
 				"class" , "commandDisabled" );
 		document.getElementById( "cmdPlayTrick" ).setAttribute( 
@@ -518,6 +537,8 @@ function scoreBottom() {
 		alert( "Defenders defended bottom. Final attacker score: " + 
 													round.roundData.points );
 	}
+	document.getElementById( "txtPoints" ).innerHTML = "Points: " + 
+														round.roundData.points;
 	document.getElementById( "cmdViewBottom" ).setAttribute( 
 												"class" , "commandDisabled" );
 	document.getElementById( "cmdNextRound" ).setAttribute( 
@@ -528,6 +549,14 @@ function startNextRound() {
 	if ( document.getElementById( 
 					"pnlNextRound" ).getAttribute( "class" ) == "command" ) {
 		//TODO start next round
+		var defenders = "??";
+		if ( round.starter == "N" || round.starter == "S" ) {
+			defenders = "NS";
+		}
+		else if ( round.starter == "E" || round.starter == "W" ) {
+			defenders = "EW";
+		}
+		
 	}
 }
 

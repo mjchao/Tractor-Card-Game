@@ -379,6 +379,14 @@ function Trick( level , trumpSuit , firstHand , leader ) {
 		return false;
 	}
 	
+	this.countPoints = function() {
+		var rtn = 0;
+		for ( var i=0 ; i<4 ; ++i ) {
+			rtn += this.hands[ i ].countPoints();
+		}
+		return rtn;
+	}
+	
 	/**
 	 * Determines who wins this trick. Only works if the trick is valid! All
 	 * hands played must be correct. For example, this assumes that everyone

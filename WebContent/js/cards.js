@@ -501,6 +501,19 @@ function Hand( verticalCards , visible ) {
 		}
 		return count;
 	}
+	
+	this.countPoints = function() {
+		var rtn = 0;
+		for ( var i=0 ; i<this.size() ; ++i ) {
+			if ( this.get( i ).value == 5 ) {
+				rtn += 5;
+			}
+			else if ( this.get( i ).value == 10 || this.get( i ).value == 13 ) {
+				rtn += 10;
+			}
+		}
+		return rtn;
+	}
 }
 
 /*

@@ -164,7 +164,7 @@ function canDump( playedHand , playerEntireHand , level , trumpSuit ) {
 		suit = trumpSuit;
 	}
 	
-	var validCards = new Hand();
+	var lastInvalid = undefined;
 	var playCopy = playedHand.clone();
 	var entireSuit = new Hand();
 	for ( var i=0 ; i<playerEntireHand.size() ; ++i ) {
@@ -189,10 +189,14 @@ function canDump( playedHand , playerEntireHand , level , trumpSuit ) {
 		var compareTractor = removeTractorLengthFrom( entireSuitCopy , 
 				playedTractor.size() , level , trumpSuit );
 		while( compareTractor.size() != 0 ) {
-			if ( compareTractor.get( 0 ).compareToWithPlayOrder( playedTractor.get( 0 ) , level , trumpSuit ) > 0 ) {
-				return playedTractor;
+			if ( compareTractor.get( 0 ).compareToWithPlayOrder( 
+					playedTractor.get( 0 ) , level , trumpSuit ) > 0 ) {
+				lastInvalid = playedTractor;
 			}
+			compareTractor = removeTractorLengthFrom( entireSuitCopy , 
+								playedTractor.size() , level , trumpSuit );
 		}
+		playedTractor = removeTractorFrom( playCopy , level , trumpSuit );
 	}
 	
 	//check that every pair cannot be beaten
@@ -202,9 +206,11 @@ function canDump( playedHand , playerEntireHand , level , trumpSuit ) {
 		var comparePair = removePairFrom( entireSuitCopy );
 		while( comparePair.size() != 0 ) {
 			if ( comparePair.get( 0 ).compareToWithPlayOrder( playedPair.get( 0 ) , level , trumpSuit ) > 0 ) {
-				return playedPair;
+				lastInvalid = playedPair;
 			}
+			comparePair = removePairFrom( entireSuitCopy );
 		}
+		playedPair = removePairFrom( playCopy , level , trumpSuit );
 	}
 	
 	//check that every single cannot be beaten
@@ -214,12 +220,19 @@ function canDump( playedHand , playerEntireHand , level , trumpSuit ) {
 		var compareSingle = removeSingleFrom( entireSuitCopy );
 		while( compareSingle.size() != 0 ) {
 			if ( compareSingle.get( 0 ).compareToWithPlayOrder( playedSingle.get( 0 ) , level , trumpSuit ) > 0 ) {
-				return playedSingle;		
+				lastInvalid = playedSingle;		
 			}
+			compareSingle = removeSingleFrom( entireSuitCopy );
 		}
+		playedSingle = removeSingleFrom( playCopy , level , trumpSuit );
 	}
 	
-	return playedHand;
+	if ( lastInvalid == undefined ) {
+		return playedHand;
+	}
+	else {
+		return lastInvalid;
+	}
 }
 
 function removeSingleFrom( hand ) {
@@ -685,9 +698,10 @@ function assert( condition , message ) {
 	}
 }
 
-/*
+
 var testHand = new Hand();
 
+/*
 //PAIR TESTS
 testHand.clear();
 testHand.addCard( new Card( 2 , 2 ) );
@@ -2117,8 +2131,92 @@ testTrick.setCardsPlayed( "E" , eHand );
 testTrick.setCardsPlayed( "S" , sHand );
 testTrick.setCardsPlayed( "W" , wHand );
 assert( testTrick.determineWinner() == "N" );
-console.log( "Tests finished" );
-//*/
+//
 
 //CAN DUMP tests
+var playerHand = new Hand();
 
+//test no contest
+testHand.clear();
+testHand.addCard( new Card( 1 , 1 ) );
+testHand.addCard( new Card( 1 , 13 ) );
+testHand.addCard( new Card( 1 , 12 ) );
+playerHand.clear();
+playerHand.addCard( new Card( 2 , 1 ) );
+playerHand.addCard( new Card( 2 , 13 ) );
+playerHand.addCard( new Card( 2 , 12 ) );
+var result = canDump( testHand , playerHand , 10 , 4 );
+assert( result.size() == 3 );
+
+//test p1 being really stupid
+testHand.clear();
+testHand.addCard( new Card( 1 , 1 ) );
+testHand.addCard( new Card( 1 , 13 ) );
+testHand.addCard( new Card( 1 , 12 ) );
+playerHand.clear();
+playerHand.addCard( new Card( 1 , 1 ) );
+playerHand.addCard( new Card( 1 , 13 ) );
+playerHand.addCard( new Card( 1 , 12 ) );
+var result = canDump( testHand , playerHand , 10 , 4 );
+assert( result.size() == 1 );
+assert( result.get( 0 ) == testHand.get( 2 ) );
+
+//test pair fails
+testHand.clear();
+testHand.addCard( new Card( 1 , 1 ) );
+testHand.addCard( new Card( 1 , 12 ) );
+testHand.addCard( new Card( 1 , 12 ) );
+playerHand.clear();
+playerHand.addCard( new Card( 2 , 1 ) );
+playerHand.addCard( new Card( 1 , 13 ) );
+playerHand.addCard( new Card( 1 , 13 ) );
+var result = canDump( testHand , playerHand , 10 , 4 );
+assert( result.size() == 2 );
+assert( result.get( 0 ) == testHand.get( 1 ) );
+
+//test single fails, but pairs are okay
+testHand.clear();
+testHand.addCard( new Card( 1 , 13 ) );
+testHand.addCard( new Card( 1 , 12 ) );
+testHand.addCard( new Card( 1 , 12 ) );
+playerHand.clear();
+playerHand.addCard( new Card( 1 , 1 ) );
+playerHand.addCard( new Card( 1 , 11 ) );
+playerHand.addCard( new Card( 1 , 11 ) );
+var result = canDump( testHand , playerHand , 10 , 4 );
+assert( result.size() == 1 );
+assert( result.get( 0 ) == testHand.get( 0 ) );
+
+//test single and double fails (single is called out because it is
+//the more common of the two)
+testHand.clear();
+testHand.addCard( new Card( 1 , 11 ) );
+testHand.addCard( new Card( 1 , 12 ) );
+testHand.addCard( new Card( 1 , 12 ) );
+playerHand.clear();
+playerHand.addCard( new Card( 1 , 1 ) );
+playerHand.addCard( new Card( 1 , 13 ) );
+playerHand.addCard( new Card( 1 , 13 ) );
+var result = canDump( testHand , playerHand , 10 , 4 );
+assert( result.size() == 1 );
+assert( result.get( 0 ) == testHand.get( 0 ) );
+
+//test tractor fails
+testHand.clear();
+testHand.addCard( new Card( 1 , 1 ) );
+testHand.addCard( new Card( 1 , 10 ) );
+testHand.addCard( new Card( 1 , 10 ) );
+testHand.addCard( new Card( 1 , 9 ) );
+testHand.addCard( new Card( 1 , 9 ) );
+playerHand.clear();
+playerHand.addCard( new Card( 1 , 1 ) );
+playerHand.addCard( new Card( 1 , 13 ) );
+playerHand.addCard( new Card( 1 , 13 ) );
+playerHand.addCard( new Card( 1 , 12 ) );
+playerHand.addCard( new Card( 1 , 12 ) );
+var result = canDump( testHand , playerHand , 2 , 4 );
+assert( result.size() == 4 );
+assert( result.get( 2 ) == testHand.get( 3 ) );
+
+console.log( "Tests finished" );
+//*/

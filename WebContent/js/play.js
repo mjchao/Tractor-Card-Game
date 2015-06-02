@@ -481,13 +481,44 @@ function startNextTrick() {
 }
 
 function revealBottom() {
+	if ( document.getElementById( "cmdViewBottom" ).getAttribute( 
+											"class" ) == "commandDisabled" ) {
+		return;
+	}
 	round.showBottom();
 	scoreBottom();
 }
 
 function scoreBottom() {
-	//TODO
-	document.getElementById( "cmdViewBottom" ).setAttribtue( 
+	var defenders = "??";
+	if ( round.starter == "N" || round.starter == "S" ) {
+		defenders = "NS";
+	}
+	else if ( round.starter == "E" || round.starter == "W" ) {
+		defenders = "EW";
+	}
+	
+	if ( defenders.indexOf( trick.determineWinner() ) == -1 ) {
+		var pointsInBottom = 0;
+		for ( var i=0 ; i<round.bottom.size() ; ++i ) {
+			if ( round.bottom.get( i ).value == 5 ) {
+				pointsInBottom += 5;
+			}
+			else if ( round.bottom.get( i ).value == 10 || 
+										round.bottom.get( i ).value == 13 ) {
+				pointsInBottom += 10;
+			}
+		}
+		alert( "Attackers won the bottom and received " + pointsInBottom + 
+				" x2 = " + (2*pointsInBottom) + " additional points. " + 
+				"Final attacker score: " + 
+				(round.roundData.points + pointsInBottom*2)  );
+	}
+	else {
+		alert( "Defenders defended bottom. Final attacker score: " + 
+													round.roundData.points );
+	}
+	document.getElementById( "cmdViewBottom" ).setAttribute( 
 												"class" , "commandDisabled" );
 	document.getElementById( "cmdNextRound" ).setAttribute( 
 														"class" , "command" );

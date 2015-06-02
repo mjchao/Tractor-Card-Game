@@ -485,12 +485,18 @@ function Round( level , starter ) {
 	}
 	
 	this.showBottom = function() {
+		var pnlCenter = document.getElementById( "pnlCenter" );
 		for ( var i=0 ; i<this.bottom.size() ; ++i ) {
 			this.bottom.get( i ).setVisible( true );
+			this.bottom.get( i ).setVertical( true );
+			this.bottom.get( i ).toggleSelection( false );
+			this.bottom.get( i ).getImage().style.top = "0px";
 		}
 		this.bottom.visible = true;
 		this.bottom.verticalCards = true;
-		this.showPlayedCards( "C" , this.bottom );
+		this.bottom.renderDealingOffsets( this.roundData.level );
+		var dispC = new HandDisplay( this.bottom , "C" );
+		dispC.renderCenter( pnlCenter );
 	}
 	//*/
 }

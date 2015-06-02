@@ -258,7 +258,6 @@ function playerNameToIdx( name ) {
 function playSelectedCards( playerIdx , playerEntireHand ) {
 	var handPlayed = new Hand( true , true );
 	
-	//TODO code is not robust :(
 	if ( playerIdx == 1 || playerIdx == 3 ) {
 		handPlayed = new Hand( false , true );
 	}
@@ -336,6 +335,7 @@ function play() {
 													"class" , "command" );
 		}
 	}
+	round.renderDeclaredHands();
 }
 
 function playSelected() {

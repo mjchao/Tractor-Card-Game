@@ -214,6 +214,9 @@ function Card( suit , value ) {
 	/**
 	 * Compares this card to another card assuming that the other card
 	 * was played before this card.
+	 * 
+	 * @return 0 or -1 if this card is "less than" the card with which we
+	 * compare, and 1 if this card is "greater than" the other card.
 	 */
 	this.compareToWithPlayOrder = function( card , level , declaredSuit ) {
 		if ( this.suit > 4 ) {

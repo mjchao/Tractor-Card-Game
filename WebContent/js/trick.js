@@ -589,7 +589,6 @@ function Trick( level , trumpSuit , firstHand , leader ) {
 	return -1;
 }
 
-
 //Unit Tests:
 //Reminder: constructor for Card is Card( suit , value ) not
 //Card( value , suit )
@@ -1434,6 +1433,24 @@ testTrick.setCardsPlayed( "E" , eHand );
 testTrick.setCardsPlayed( "S" , sHand );
 testTrick.setCardsPlayed( "W" , wHand );
 assert( testTrick.determineWinner() == "W" );
+
+nHand.clear();
+nHand.addCard( new Card( 1 , 2 ) );
+nHand.addCard( new Card( 1 , 2 ) );
+eHand.clear();
+eHand.addCard( new Card( 1 , 4 ) );
+eHand.addCard( new Card( 1 , 4 ) );
+sHand.clear();
+sHand.addCard( new Card( 5 , 0 ) );
+sHand.addCard( new Card( 5 , 0 ) );
+wHand.clear();
+wHand.addCard( new Card( 5 , 0 ) );
+wHand.addCard( new Card( 5 , 0 ) );
+testTrick = new Trick( 10 , 5 , nHand , "N" );
+testTrick.setCardsPlayed( "E" , eHand );
+testTrick.setCardsPlayed( "S" , sHand );
+testTrick.setCardsPlayed( "W" , wHand );
+assert( testTrick.determineWinner() == "S" );
 
 nHand.clear();
 nHand.addCard( new Card( 1 , 2 ) );

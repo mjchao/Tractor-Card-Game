@@ -169,7 +169,8 @@ function canDump( playedHand , playerEntireHand , level , trumpSuit ) {
 	var entireSuit = new Hand();
 	for ( var i=0 ; i<playerEntireHand.size() ; ++i ) {
 		if ( suit == trumpSuit ) {
-			if( isTrump( playerEntireHand.get( i ) ) ) {
+			if( playerEntireHand.get( i ).value == level || 
+							playerEntireHand.get( i ).suit == trumpSuit ) {
 				entireSuit.addCard( playerEntireHand.get( i ) );
 			}
 		}

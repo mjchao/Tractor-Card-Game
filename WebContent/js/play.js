@@ -1,3 +1,5 @@
+var nsLevel = 2;
+var ewLevel = 2;
 var round = new Round( 2 , "?" );
 var pnlDeclare = document.getElementById( "pnlDeclare" );
 var pnlBottom = document.getElementById( "pnlBottom" );
@@ -166,6 +168,8 @@ function addBottomToHand() {
 	for ( var i=0 ; i<hand.size() ; ++i ) {
 		hand.get( i ).setSelected( false );
 	}
+	
+	round.bottom.clear();
 	
 	round.renderDeclaredHands();
 }
@@ -419,24 +423,45 @@ function play() {
 	}
 	if ( trick == undefined || trick.finished() ) {
 		if ( aiPlayed ) {
-			document.getElementById( "cmdNextTrick" ).setAttribute( 
-													"class" , "command" );
+			if ( round.handS.size() > 0 ) {
+				document.getElementById( "cmdNextTrick" ).setAttribute( 
+														"class" , "command" );
+			}
+			else {
+				document.getElementById( "pnlPlay" ).style.visibility = "hidden";
+				document.getElementById( 
+								"pnlNextRound" ).style.visibility = "visible";
+				document.getElementById( "cmdNextRound" ).setAttribute( 
+												"class" , "commandDisabled" );
+			}
 		}
 	}
 	round.renderDeclaredHands();
 }
 
 function playSelected() {
-	document.getElementById( "cmdPlayTrick" ).setAttribute( 
+	if ( document.getElementById( "cmdPlayTrick" ).getAttribute( 
+													"class" ) == "command" ) {
+		document.getElementById( "cmdPlayTrick" ).setAttribute( 
 												"class" , "commandDisabled" );
-	playSelectedCards( 0 , round.handS );
-	++currIdx;
-	if ( trick.finished() ) {
-		document.getElementById( "cmdNextTrick" ).setAttribute( 
+		playSelectedCards( 0 , round.handS );
+		++currIdx;
+		if ( trick.finished() ) {
+			if ( round.handS.size() > 0 ) {
+				document.getElementById( "cmdNextTrick" ).setAttribute( 
 														"class" , "command" );
-	}
-	else {
-		play();
+			}
+			else {
+				document.getElementById( "pnlPlay" ).style.visibility = "hidden";
+				document.getElementById( 
+								"pnlNextRound" ).style.visibility = "visible";
+				document.getElementById( "cmdNextRound" ).setAttribute( 
+												"class" , "commandDisabled" );
+			}
+		}
+		else {
+			play();
+		}
 	}
 }
 
@@ -455,6 +480,26 @@ function startNextTrick() {
 	}
 }
 
+function revealBottom() {
+	round.showBottom();
+	scoreBottom();
+}
+
+function scoreBottom() {
+	//TODO
+	document.getElementById( "cmdViewBottom" ).setAttribtue( 
+												"class" , "commandDisabled" );
+	document.getElementById( "cmdNextRound" ).setAttribute( 
+														"class" , "command" );
+}
+
+function startNextRound() {
+	if ( document.getElementById( 
+					"pnlNextRound" ).getAttribute( "class" ) == "command" ) {
+		//TODO start next round
+	}
+}
+
 document.getElementById( "cmdDeal" ).onclick = deal;
 document.getElementById( "cmdSpades" ).onclick = flipSpades;
 document.getElementById( "cmdHearts" ).onclick = flipHearts;
@@ -466,3 +511,5 @@ document.getElementById( "cmdFlipBottom" ).onclick = flipBottom;
 document.getElementById( "cmdBottom" ).onclick = processBottom;
 document.getElementById( "cmdPlayTrick" ).onclick = playSelected;
 document.getElementById( "cmdNextTrick" ).onclick = startNextTrick;
+document.getElementById( "cmdViewBottom" ).onclick = revealBottom;
+document.getElementById( "cmdNextRound" ).onclick = startNextRound;

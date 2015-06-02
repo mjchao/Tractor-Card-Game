@@ -483,6 +483,15 @@ function Round( level , starter ) {
 		var dispC = new HandDisplay( handPlayed , player );
 		dispC.renderCenter( pnlCenter );
 	}
+	
+	this.showBottom = function() {
+		for ( var i=0 ; i<this.bottom.size() ; ++i ) {
+			this.bottom.get( i ).setVisible( true );
+		}
+		this.bottom.visible = true;
+		this.bottom.verticalCards = true;
+		this.showPlayedCards( "C" , this.bottom );
+	}
 	//*/
 }
 

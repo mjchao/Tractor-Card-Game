@@ -144,6 +144,84 @@ function isTractor( hand , level , trumpSuit ) {
 	return true;
 }
 
+function isDump( hand ) {
+	return !isSingle( hand ) && !isPair( hand ) && !isTractor( hand );
+}
+
+/**
+ * @param playedHand
+ * @param playerEntireHand
+ * @return the cards that must be played as a result of this dump. If the dump
+ * was valid, entire dump is returned. If the dump was invalid, the 
+ * violating cards are returned, and those cards must be played.
+ */
+function canDump( playedHand , playerEntireHand , level , trumpSuit ) {
+	var suit = playedHand.get( 0 ).suit;
+	if ( suit > 4 ) { 
+		suit = trumpSuit;
+	}
+	if ( playedHand.get( 0 ).value == level ) {
+		suit = trumpSuit;
+	}
+	
+	var validCards = new Hand();
+	var playCopy = playedHand.clone();
+	var entireSuit = new Hand();
+	for ( var i=0 ; i<playerEntireHand.size() ; ++i ) {
+		if ( suit == trumpSuit ) {
+			if( isTrump( playerEntireHand.get( i ) ) ) {
+				entireSuit.addCard( playerEntireHand.get( i ) );
+			}
+		}
+		else {
+			if ( playerEntireHand.get( i ).suit == suit ) {
+				entireSuit.addCard( playerEntireHand.get( i ) );
+			}
+		}
+	}
+	
+	var entireSuitCopy = entireSuit.clone();
+	
+	//check that every tractor cannot be beaten
+	var playedTractor = removeTractorFrom( playCopy , level , trumpSuit );
+	while( playedTractor.size() > 0 ) {
+		entireSuitCopy = entireSuit.clone();
+		var compareTractor = removeTractorLengthFrom( entireSuitCopy , 
+				playedTractor.size() , level , trumpSuit );
+		while( compareTractor.size() != 0 ) {
+			if ( compareTractor.get( 0 ).compareToWithPlayOrder( playedTractor.get( 0 ) , level , trumpSuit ) > 0 ) {
+				return playedTractor;
+			}
+		}
+	}
+	
+	//check that every pair cannot be beaten
+	var playedPair = removePairFrom( playCopy , level , trumpSuit );
+	while( playedPair.size() > 0 ) {
+		entireSuitCopy = entireSuit.clone();
+		var comparePair = removePairFrom( entireSuitCopy );
+		while( comparePair.size() != 0 ) {
+			if ( comparePair.get( 0 ).compareToWithPlayOrder( playedPair.get( 0 ) , level , trumpSuit ) > 0 ) {
+				return playedPair;
+			}
+		}
+	}
+	
+	//check that every single cannot be beaten
+	var playedSingle = removeSingleFrom( playCopy , level , trumpSuit )
+	while( playedSingle.size() > 0 ) {
+		entireSuitCopy = entireSuit.clone();
+		var compareSingle = removeSingleFrom( entireSuitCopy );
+		while( compareSingle.size() != 0 ) {
+			if ( compareSingle.get( 0 ).compareToWithPlayOrder( playedSingle.get( 0 ) , level , trumpSuit ) > 0 ) {
+				return playedSingle;		
+			}
+		}
+	}
+	
+	return playedHand;
+}
+
 function removeSingleFrom( hand ) {
 	var rtn = new Hand();
 	for ( var i=0 ; i<hand.size() ; ++i ) {
@@ -597,7 +675,7 @@ function Trick( level , trumpSuit , firstHand , leader ) {
 	return -1;
 }
 
-/*
+
 //Unit Tests:
 //Reminder: constructor for Card is Card( suit , value ) not
 //Card( value , suit )
@@ -607,7 +685,7 @@ function assert( condition , message ) {
 	}
 }
 
-
+/*
 var testHand = new Hand();
 
 //PAIR TESTS
@@ -2041,3 +2119,6 @@ testTrick.setCardsPlayed( "W" , wHand );
 assert( testTrick.determineWinner() == "N" );
 console.log( "Tests finished" );
 //*/
+
+//CAN DUMP tests
+

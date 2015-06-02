@@ -469,21 +469,19 @@ function playSelected() {
 			if ( trick.finished() ) {
 				if ( round.handS.size() > 0 ) {
 					document.getElementById( "cmdNextTrick" ).setAttribute( 
-															"class" , "command" );
+														"class" , "command" );
 				}
 				else {
 					document.getElementById( "pnlPlay" ).style.visibility = "hidden";
 					document.getElementById( 
-									"pnlNextRound" ).style.visibility = "visible";
+								"pnlNextRound" ).style.visibility = "visible";
 					document.getElementById( "cmdNextRound" ).setAttribute( 
-													"class" , "commandDisabled" );
+												"class" , "commandDisabled" );
 				}
 			}
 			else {
 				play();
 			}
-		}
-		if ( success ) {
 			document.getElementById( "cmdPlayTrick" ).setAttribute( 
 												"class" , "commandDisabled" );
 		}
@@ -510,6 +508,13 @@ function scoreTrick() {
 
 function startNextTrick() {
 	if ( trick.finished() ) {
+		
+		//reset cards so that they are all unselected.
+		round.handN.unselectAll();
+		round.handS.unselectAll();
+		round.handE.unselectAll();
+		round.handW.unselectAll();
+		
 		scoreTrick();
 		document.getElementById( "cmdNextTrick" ).setAttribute( 
 				"class" , "commandDisabled" );

@@ -514,6 +514,12 @@ function Hand( verticalCards , visible ) {
 		}
 		return rtn;
 	}
+	
+	this.unselectAll = function() {
+		for ( var i=0 ; i<this.size() ; ++i ) {
+			this.get( i ).setSelected( false );
+		}
+	}
 }
 
 /*

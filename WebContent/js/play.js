@@ -1,16 +1,78 @@
-var round = new Round( 2 , "N" );
+var round = new Round( 2 , "?" );
 var pnlDeclare = document.getElementById( "pnlDeclare" );
 var pnlBottom = document.getElementById( "pnlBottom" );
 var pnlPlay = document.getElementById( "pnlPlay" );
 
+function checkAIDeclare( ai , player , hand ) {
+
+	while( round.canDeclare( player , 1 ) ) {
+		if ( ai.wantFlipDiamonds( round ) ) {
+			round.tryDeclare( player , 1 );
+		}
+		else {
+			break;
+		}
+	}
+	
+	while( round.canDeclare( player , 2 ) ) {
+		if ( ai.wantFlipClubs( round ) ) {
+			round.tryDeclare( player , 2 );
+		}
+		else {
+			break;
+		}
+	}
+	
+	while( round.canDeclare( player , 3 ) ) {
+		if ( ai.wantFlipHearts( round ) ) {
+			round.tryDeclare( player , 3 );
+		}
+		else {
+			break;
+		}
+	}
+	
+	while( round.canDeclare( player , 4 ) ) {
+		if ( ai.wantFlipSpades( round ) ) {
+			round.tryDeclare( player , 4 );
+		}
+		else {
+			break;
+		}
+	}
+	
+	//6 comes before 5 b/c by default, AI will not want to show both
+	//little and big jokers if AI has them all
+	while( round.canDeclare( player , 6 ) ) {
+		if ( ai.wantFlipNoTrump( round ) ) {
+			round.tryDeclare( player , 6 );
+		}
+		else {
+			break;
+		}
+	}
+	
+	while( round.canDeclare( player , 5 ) ) {
+		if ( ai.wantFlipNoTrump( round ) ) {
+			round.tryDeclare( player , 5 );
+		}
+		else {
+			break;
+		}
+	}
+}
+
+function checkAIsDeclare() {
+	checkAIDeclare( westAI , "W" , westAI.data.hand );
+	checkAIDeclare( northAI , "N" , northAI.data.hand );
+	checkAIDeclare( eastAI , "E" , eastAI.data.hand );
+}
+
 function deal() {
 	round.deal();
 	
-	//TODO AI makes declaration, if possible
+	checkAIsDeclare();
 	
-	//round.tryDeclare( "E" , 3 );
-	//round.tryDeclare( "N" , 3 );
-	//round.tryDeclare( "W" , 3 );
 	if ( round.dealer.finished() ) {
 		
 		document.getElementById( "cmdDeal" ).setAttribute( 
@@ -144,37 +206,44 @@ function processDealingComplete() {
  * must select 8 cards to remove.
  */
 function processBottom() {
+	var hand;
 	if ( round.roundData.starter == "S" ) {
-		var numCardsSelected = 0;
-		for ( var i=0 ; i<round.handS.size() ; ++i ) {
-			if ( round.handS.get( i ).selected ) {
-				++numCardsSelected;
-			}
-		}
-		
-		if ( numCardsSelected == 8 ) {
-			for ( var i=0 ; i<round.handS.size() ; ++i ) {
-				if ( round.handS.get( i ).selected ) {
-					round.handS.removeCard( round.handS.get( i ) );
-					
-					//have to decrement counter because the size of the array
-					//went down by 1 when the card was removed
-					--i;
-				}
-			}
-			pnlBottom.style.visibility = "hidden";
-			pnlPlay.style.visibility = "visible";
-			round.renderDeclaredHands();
-			beginPlay();
-		}
-		else {
-			alert( "You have selected " + numCardsSelected + 
-					" cards to move to the bottom. You must select exactly 8." );
-		}
+		hand = round.handS;
 	}
 	else {
-		//TODO AI moves 8 cards to bottom
+		ai = getAIByName( round.roundData.starter );
+		hand = ai.data.hand;
+		ai.unselectAll();
+		ai.makeBottom();
+	}
+	
+	var numCardsSelected = 0;
+	for ( var i=0 ; i<hand.size() ; ++i ) {
+		if ( hand.get( i ).selected ) {
+			++numCardsSelected;
+		}
+	}
+	
+	if ( numCardsSelected == 8 ) {
+		for ( var i=0 ; i<hand.size() ; ++i ) {
+			if ( hand.get( i ).selected ) {
+				round.bottom.addCard( hand.get( i ) );
+				hand.removeCard( hand.get( i ) );
+				
+				//have to decrement counter because the size of the array
+				//went down by 1 when the card was removed
+				--i;
+			}
+		}
+		pnlBottom.style.visibility = "hidden";
+		pnlPlay.style.visibility = "visible";
+		round.renderDeclaredHands();
+		
 		beginPlay();
+	}
+	else {
+		alert( "You have selected " + numCardsSelected + 
+				" cards to move to the bottom. You must select exactly 8." );
 	}
 }
 
@@ -215,6 +284,21 @@ var lastWinner = -1;
 var northAI = new AI( new AIData( round.handN ) );
 var eastAI = new AI( new AIData( round.handE ) );
 var westAI = new AI( new AIData( round.handW ) );
+
+function getAIByName( name ) {
+	if ( name == "N" ) {
+		return northAI;
+	}
+	else if ( name == "E" ) {
+		return eastAI;
+	}
+	else if ( name == "W" ) {
+		return westAI;
+	}
+	else {
+		return undefined;
+	}
+}
 
 function playerIdxToName( idx ) {
 	if ( idx == 0 ) {

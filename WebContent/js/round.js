@@ -117,6 +117,22 @@ function RoundData( level , starter ) {
 	}
 }
 
+function getFirstRoundFirstDrawer() {
+	var idx = Math.floor( Math.random()*4 );
+	if ( idx == 0 ) {
+		return "S";
+	}
+	else if ( idx == 1 ) {
+		return "W";
+	}
+	else if ( idx == 2 ) {
+		return "N";
+	}
+	else if ( idx == 3 ) {
+		return "E";
+	}
+}
+
 function Round( level , starter ) {
 	this.roundData = new RoundData( level , starter );
 	
@@ -140,9 +156,17 @@ function Round( level , starter ) {
 	this.bottom.visible = false;
 	this.bottom.verticalCards = true;
 	
-	this.dealer = new Dealer( this.handN , this.handS , 
-							this.handE , this.handW , this.bottom , starter );
-	this.dealer.reset( starter );
+	if ( starter == "?" ) {
+		var randomFirstDrawer = getFirstRoundFirstDrawer();
+		this.dealer = new Dealer( this.handN , this.handS , 
+				this.handE , this.handW , this.bottom , randomFirstDrawer );
+		this.dealer.reset( randomFirstDrawer );
+	}
+	else {
+		this.dealer = new Dealer( this.handN , this.handS , 
+								this.handE , this.handW , this.bottom , starter );
+		this.dealer.reset( starter );
+	}
 	
 	var pnlNorth = document.getElementById( "pnlNorth" );
 	var pnlSouth = document.getElementById( "pnlSouth" );
@@ -262,6 +286,29 @@ function Round( level , starter ) {
 			this.renderDeclaredHands();
 		}
 		this.updateDeclarationButtons( this.handS );
+	}
+	
+	this.canDeclare = function( player , suit ) {
+		var hand;
+		if ( player == "N" ) {
+			hand = this.handN;
+		}
+		else if ( player == "S" ) {
+			hand = this.handS;
+		}
+		else if ( player == "E" ) {
+			hand = this.handE;
+		}
+		else if ( player == "W" ) {
+			hand = this.handW;
+		}
+		
+		if ( this.roundData.isDeclared() ) {
+			return this.roundData.canOverride( player , hand , suit );
+		}
+		else {
+			return this.roundData.canDeclare( player , hand , suit );
+		}
 	}
 	
 	this.tryDeclare = function( player , suit ) {

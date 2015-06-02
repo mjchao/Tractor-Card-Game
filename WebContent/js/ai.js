@@ -7,6 +7,47 @@ function AI( data ) {
 	//TODO implement smarter AI
 	this.data = data;
 	
+	this.wantFlipNoTrump = function( ROUND ) {
+		if ( ROUND.roundData.starter == "?" ) {
+			return true;
+		}
+		return false;
+	}
+	
+	this.wantFlipSpades = function( ROUND ) {
+		if ( ROUND.roundData.starter == "?" ) {
+			return true;
+		}
+		return false;
+	}
+	
+	this.wantFlipHearts = function( ROUND ) {
+		if ( ROUND.roundData.starter == "?" ) {
+			return true;
+		}
+		return false;
+	}
+	
+	this.wantFlipClubs = function( ROUND ) {
+		if ( ROUND.roundData.starter == "?" ) {
+			return true;
+		}
+		return false;
+	}
+	
+	this.wantFlipDiamonds = function( ROUND ) {
+		if ( ROUND.roundData.starter == "?" ) {
+			return true;
+		}
+		return false;
+	}
+	
+	this.unselectAll = function() {
+		for ( var i=0 ; i<this.data.hand.size() ; ++i ) {
+			this.data.hand.get( i ).setSelected( false );
+		}
+	}
+	
 	this.lead = function( ROUND ) {
 		var randIdx = Math.floor( Math.random() * this.data.hand.size() );
 		this.data.hand.get( randIdx ).setSelected( true );
@@ -46,6 +87,20 @@ function AI( data ) {
 				}
 			}
 			myHand.get( 0 ).setSelected( true );
+		}
+	}
+	
+	/**
+	 * 
+	 */
+	this.makeBottom = function( ROUND ) {
+		console.log( "Making bottom" );
+		for ( var i=0 ; i<8 ; ++i ) {
+			var idxToHide;
+			do {
+				idxToHide = Math.floor( Math.random() * this.data.hand.size() );
+			} while ( this.data.hand.get( idxToHide ).selected );
+			this.data.hand.get( idxToHide ).setSelected( true );
 		}
 	}
 }

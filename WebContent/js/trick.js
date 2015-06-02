@@ -589,6 +589,7 @@ function Trick( level , trumpSuit , firstHand , leader ) {
 	return -1;
 }
 
+/*
 //Unit Tests:
 //Reminder: constructor for Card is Card( suit , value ) not
 //Card( value , suit )

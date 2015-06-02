@@ -254,6 +254,10 @@ function Card( suit , value ) {
 		}
 		return this.compareToByLevel( card , level );
 	}
+	
+	this.toString = function() {
+		return "(" + this.suit + ", " + this.value + ")";
+	}
 }
 
 function CardComparatorForHands( level ) {
@@ -519,6 +523,25 @@ function Hand( verticalCards , visible ) {
 		for ( var i=0 ; i<this.size() ; ++i ) {
 			this.get( i ).setSelected( false );
 		}
+	}
+	
+	this.toString = function() {
+		if ( this.size() == 0 ) {
+			return "[]";
+		}
+		else if ( this.size() == 1 ) {
+			return "[" + this.get( 0 ).toString() + "]";
+		}
+		else {
+			var rtn = "[";
+			rtn += this.get( 0 ).toString();
+			for ( var i=1 ; i<this.size() ; ++i ) {
+				rtn += ", " + this.get( i ).toString();
+			}
+			rtn += "]";
+			return rtn;
+		}
+		
 	}
 }
 

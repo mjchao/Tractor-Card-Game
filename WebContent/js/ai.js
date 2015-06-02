@@ -8,6 +8,7 @@ function AI( data ) {
 	this.data = data;
 	
 	this.wantFlipNoTrump = function( ROUND ) {
+		return false;
 		if ( ROUND.roundData.starter == "?" ) {
 			return true;
 		}
@@ -15,6 +16,7 @@ function AI( data ) {
 	}
 	
 	this.wantFlipSpades = function( ROUND ) {
+		return false;
 		if ( ROUND.roundData.starter == "?" ) {
 			return true;
 		}
@@ -22,6 +24,7 @@ function AI( data ) {
 	}
 	
 	this.wantFlipHearts = function( ROUND ) {
+		return false;
 		if ( ROUND.roundData.starter == "?" ) {
 			return true;
 		}
@@ -29,6 +32,7 @@ function AI( data ) {
 	}
 	
 	this.wantFlipClubs = function( ROUND ) {
+		return false;
 		if ( ROUND.roundData.starter == "?" ) {
 			return true;
 		}
@@ -36,6 +40,7 @@ function AI( data ) {
 	}
 	
 	this.wantFlipDiamonds = function( ROUND ) {
+		return false;
 		if ( ROUND.roundData.starter == "?" ) {
 			return true;
 		}

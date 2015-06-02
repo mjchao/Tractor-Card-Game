@@ -368,24 +368,75 @@ function playSelectedCards( playerIdx , playerEntireHand ) {
 			alert( "The hand played is invalid." );
 		}
 		else {
-			throw "AI played invalid hand. Please restart :(";
+			throw "AI played invalid hand. \n" +
+					"Played: " + handPlayed.toString() + "\n" +
+					"Hand: " + playerEntireHand.toString();
 		}
 		return false ;
 	}
 	
-	for ( var i=0 ; i<playerEntireHand.size() ; ++i ) {
-		if ( playerEntireHand.get( i ).selected ) {
-			playerEntireHand.removeAt( i );
-			--i;
-		}
-	}
-	round.showPlayedCards( playerIdxToName( playerIdx ) , handPlayed );
-	
 	if ( trick == undefined ) {
 		trick = new Trick( round.roundData.level , round.roundData.declared , 
 									handPlayed , playerIdxToName( playerIdx ) );
+		if ( trick.type == TrickTypes.DUMP ) {
+			var initialSize = handPlayed.size();
+			
+			if ( handPlayed.size() == initialSize && round.handN != playerEntireHand ) {
+				handPlayed = canDump( handPlayed , round.handN , 
+							round.roundData.level , round.roundData.declared );
+			}
+			if ( handPlayed.size() == initialSize && round.handS != playerEntireHand ) {
+				handPlayed = canDump( handPlayed , round.handS , 
+							round.roundData.level , round.roundData.declared );
+			}
+			if ( handPlayed.size() == initialSize && round.handE != playerEntireHand ) {
+				handPlayed = canDump( handPlayed , round.handE , 
+							round.roundData.level , round.roundData.declared );
+			}
+			if ( handPlayed.size() == initialSize && round.handW != playerEntireHand ) {
+				handPlayed = canDump( handPlayed , round.handW , 
+							round.roundData.level , round.roundData.declared );
+			}
+			
+			playerEntireHand.unselectAll();	
+			for ( var i=0 ; i<handPlayed.size() ; ++i ) {
+				for ( var j=0 ; j<playerEntireHand.size() ; ++j ) {
+					if ( handPlayed.get( i ) == playerEntireHand.get( j ) && 
+										!playerEntireHand.get( j ).selected ) {
+						playerEntireHand.get( j ).setSelected( true );
+						playerEntireHand.get( j ).setVisible( true );
+					}
+				}
+			}
+			
+			handPlayed.visible = true;
+			handPlayed.verticalCards = (playerIdx == 1 || playerIdx == 3) ? false : true;
+			
+			trick = new Trick( round.roundData.level , round.roundData.declared, 
+					handPlayed , playerIdxToName( playerIdx ) );
+		}
+		
+		
+		for ( var i=0 ; i<playerEntireHand.size() ; ++i ) {
+			if ( playerEntireHand.get( i ).selected ) {
+				playerEntireHand.removeAt( i );
+				--i;
+			}
+		}
+		round.showPlayedCards( playerIdxToName( playerIdx ) , handPlayed );
+		
+		
 	}
 	else {
+		
+		for ( var i=0 ; i<playerEntireHand.size() ; ++i ) {
+			if ( playerEntireHand.get( i ).selected ) {
+				playerEntireHand.removeAt( i );
+				--i;
+			}
+		}
+		round.showPlayedCards( playerIdxToName( playerIdx ) , handPlayed );
+		
 		trick.setCardsPlayed( playerIdxToName( playerIdx ) , handPlayed );
 	}
 	return true;

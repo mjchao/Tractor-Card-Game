@@ -178,14 +178,13 @@
 }
 
 #cmdFlipBottom, #cmdFlipBottomNext {
-	visibility: hidden;
+	
 }
 
 #pnlNextRound {
 	position: relative;
 	top: -150px;
 	left: 450px;
-	visibility: hidden;
 }
 
 #pnlStats {

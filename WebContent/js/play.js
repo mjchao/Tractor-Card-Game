@@ -6,6 +6,64 @@ var pnlBottom = document.getElementById( "pnlBottom" );
 var pnlPlay = document.getElementById( "pnlPlay" );
 var pnlNextRound = document.getElementById( "pnlNextRound" );
 
+function hideDeclarationButtons() {
+	pnlDeclare.style.visbility = "hidden";
+	document.getElementById( "cmdSpades" ).style.visibility = "hidden";
+	document.getElementById( "cmdHearts" ).style.visibility = "hidden";
+	document.getElementById( "cmdClubs" ).style.visibility = "hidden";
+	document.getElementById( "cmdDiamonds" ).style.visibility = "hidden";
+	document.getElementById( "cmdNoTrump" ).style.visibility = "hidden";
+	document.getElementById( "cmdDeal" ).style.visibility = "hidden";
+	document.getElementById( "cmdFlipBottom" ).style.visibility = "hidden";
+	document.getElementById( "cmdFlipBottomNext" ).style.visibility = "hidden";
+}
+
+function showDeclarationButtons() {
+	pnlDeclare.style.visbility = "visible";
+	document.getElementById( "cmdSpades" ).style.visibility = "visible";
+	document.getElementById( "cmdHearts" ).style.visibility = "visible";
+	document.getElementById( "cmdClubs" ).style.visibility = "visible";
+	document.getElementById( "cmdDiamonds" ).style.visibility = "visible";
+	document.getElementById( "cmdNoTrump" ).style.visibility = "visible";
+	document.getElementById( "cmdDeal" ).style.visibility = "visible";
+	document.getElementById( "cmdFlipBottom" ).style.visibility = "visible";
+	document.getElementById( "cmdFlipBottomNext" ).style.visibility = "visible";
+}
+
+function hideBottomButtons() {
+	pnlBottom.style.visibility = "hidden";
+	document.getElementById( "cmdBottom" ).style.visibility = "hidden";
+}
+
+function showBottomButtons() {
+	pnlBottom.style.visibility = "visible";
+	document.getElementById( "cmdBottom" ).style.visibility = "visible";
+}
+
+function hidePlayButtons() {
+	pnlPlay.style.visibility = "hidden";
+	document.getElementById( "cmdPlayTrick" ).style.visibility = "hidden";
+	document.getElementById( "cmdNextTrick" ).style.visibility = "hidden";
+}
+
+function showPlayButtons() {
+	pnlPlay.style.visibility = "visible";
+	document.getElementById( "cmdPlayTrick" ).style.visibility = "visible";
+	document.getElementById( "cmdNextTrick" ).style.visibility = "visible";
+}
+
+function hideNextRoundButtons() {
+	pnlNextRound.style.visibility = "hidden";
+	document.getElementById( "cmdViewBottom" ).style.visibility = "hidden";
+	document.getElementById( "cmdNextRound" ).style.visibility = "hidden";
+}
+
+function showNextRoundButtons() {
+	pnlNextRound.style.visibility = "visible";
+	document.getElementById( "cmdViewBottom" ).style.visibility = "visible";
+	document.getElementById( "cmdNextRound" ).style.visibility = "visible";
+}
+
 function checkAIDeclare( ai , player , hand ) {
 
 	while( round.canDeclare( player , 1 ) ) {
@@ -144,6 +202,16 @@ function flipBottom() {
 }
 
 function addBottomToHand() {
+	
+	if ( round.roundData.starter == "?" ) {
+		round.roundData.starter = round.roundData.lastDeclarer;
+		round.starter = round.roundData.starter;
+	}
+	else {
+		console.log( round.roundData.starter );
+	}
+	updateRoundStats();
+	
 	var hand;
 	
 	if ( round.roundData.starter == "N" ) {
@@ -185,11 +253,12 @@ function showBottomCommands() {
 	if ( round.dealer.finished() && round.roundData.isDeclared() ) {
 		document.getElementById( "cmdFlipBottomNext" ).style.visibility = 
 			"hidden";
+		
 		if ( round.roundData.starter == "S" ) {
-			pnlBottom.style.visibility = "visible";
+			showBottomButtons();
 		}
 		else {
-			pnlPlay.style.visibility = "visible";
+			showPlayButtons();
 			processBottom();
 		}
 	}
@@ -200,7 +269,7 @@ function showBottomCommands() {
  * and declaring the trump suit) is complete.
  */
 function processDealingComplete() {
-	pnlDeclare.style.visibility = "hidden";
+	hideDeclarationButtons();
 	document.getElementById( "cmdFlipBottom" ).style.visibility = 
 		"hidden";
 	document.getElementById( "cmdFlipBottomNext" ).style.visibility = 
@@ -244,8 +313,8 @@ function processBottom() {
 				--i;
 			}
 		}
-		pnlBottom.style.visibility = "hidden";
-		pnlPlay.style.visibility = "visible";
+		hideBottomButtons();
+		showPlayButtons();
 		round.renderDeclaredHands();
 		
 		beginPlay();
@@ -506,9 +575,8 @@ function play() {
 														"class" , "command" );
 			}
 			else {
-				document.getElementById( "pnlPlay" ).style.visibility = "hidden";
-				document.getElementById( 
-								"pnlNextRound" ).style.visibility = "visible";
+				hidePlayButtons();
+				showNextRoundButtons();
 				document.getElementById( "cmdNextRound" ).setAttribute( 
 												"class" , "commandDisabled" );
 			}
@@ -529,9 +597,8 @@ function playSelected() {
 														"class" , "command" );
 				}
 				else {
-					document.getElementById( "pnlPlay" ).style.visibility = "hidden";
-					document.getElementById( 
-								"pnlNextRound" ).style.visibility = "visible";
+					hidePlayButtons();
+					showNextRoundButtons();
 					document.getElementById( "cmdNextRound" ).setAttribute( 
 												"class" , "commandDisabled" );
 				}
@@ -555,6 +622,7 @@ function scoreTrick() {
 	}
 	
 	if ( defenders.indexOf( trick.determineWinner() ) == -1 ) {
+		console.log( defenders );
 		var trickPoints = trick.countPoints();
 		round.roundData.points += trickPoints;
 		document.getElementById( "txtPoints" ).innerHTML = "Points: " + 
@@ -632,6 +700,39 @@ function scoreBottom() {
 														"class" , "command" );
 }
 
+function resetAIs() {
+	this.northAI.onNewRound( round , round.handN );
+	this.eastAI.onNewRound( round , round.handE );
+	this.westAI.onNewRound( round , round.handW );
+}
+
+function resetCommandPanels() {
+	
+	pnlDeclare.style.visbility = "visible";
+	showDeclarationButtons();
+	document.getElementById( "cmdFlipBottom" ).style.visibility = "hidden";
+	document.getElementById( "cmdFlipBottomNext" ).style.visibility = "hidden";
+	
+	document.getElementById( "cmdSpades" ).setAttribute( "class" , "declareDisabled" );
+	document.getElementById( "cmdHearts" ).setAttribute( "class" , "declareDisabled" );
+	document.getElementById( "cmdClubs" ).setAttribute( "class" , "declareDisabled" );
+	document.getElementById( "cmdDiamonds" ).setAttribute( "class" , "declareDisabled" );
+	document.getElementById( "cmdNoTrump" ).setAttribute( "class" , "declareDisabled" );
+	document.getElementById( "cmdDeal" ).setAttribute( "class" , "command" );
+	document.getElementById( "cmdFlipBottom" ).setAttribute( "class" , "command" );
+	document.getElementById( "cmdFlipBottomNext" ).setAttribute( "class" , "command" );
+	
+	hideBottomButtons();
+	
+	hidePlayButtons();
+	document.getElementById( "cmdPlayTrick" ).setAttribute( "class" , "command" );
+	document.getElementById( "cmdNextTrick" ).setAttribute( "class"  , "commandDisabled" );
+	
+	hideNextRoundButtons();
+	document.getElementById( "cmdViewBottom" ).setAttribute( "class" , "command" );
+	document.getElementById( "cmdNextRound" ).setAttribute( "class" , "commandDisabled" );
+}
+
 function startNextRound() {
 	if ( document.getElementById( 
 					"cmdNextRound" ).getAttribute( "class" ) == "command" ) {
@@ -686,28 +787,19 @@ function startNextRound() {
 			}
 			
 			if ( defenders == "NS" ) {
-				nsLevel += extraLevels;
+				nsLevel += 1 + extraLevels;
 				round = new Round( nsLevel , nextStarter );
 			}
 			else if ( defenders == "EW" ) {
-				ewLevel += extraLevels;
+				ewLevel += 1 + extraLevels;
 				round = new Round( ewLevel , nextStarter );
 			}
 		}
 		
+		document.getElementById( "pnlCenter" ).innerHTML = "";
 		updateRoundStats();
-		pnlNextRound.style.visibility = "hidden";
-		pnlBottom.style.visibility = "hidden";
-		pnlPlay.style.visibility = "hidden";
-		pnlDeclare.style.visbility = "visible";
-		document.getElementById( "cmdSpades" ).style.visibility = "visible";
-		document.getElementById( "cmdHearts" ).style.visibility = "visible";
-		document.getElementById( "cmdClubs" ).style.visibility = "visible";
-		document.getElementById( "cmdDiamonds" ).style.visibility = "visible";
-		document.getElementById( "cmdNoTrump" ).style.visibility = "visible";
-		document.getElementById( "cmdDeal" ).style.visibility = "visible";
-		document.getElementById( "cmdFlipBottom" ).style.visibility = "visible";
-		document.getElementById( "cmdFlipBottomNext" ).style.visibility = "visible";
+		resetCommandPanels();
+		resetAIs();
 	}
 }
 
@@ -763,3 +855,4 @@ document.getElementById( "cmdPlayTrick" ).onclick = playSelected;
 document.getElementById( "cmdNextTrick" ).onclick = startNextTrick;
 document.getElementById( "cmdViewBottom" ).onclick = revealBottom;
 document.getElementById( "cmdNextRound" ).onclick = startNextRound;
+resetCommandPanels();

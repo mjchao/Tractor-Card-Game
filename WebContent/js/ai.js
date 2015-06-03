@@ -7,6 +7,14 @@ function AI( data ) {
 	//TODO implement smarter AI
 	this.data = data;
 	
+	/**
+	 * Called whenever a new round begins, so that the AI may reset its
+	 * "knowledge" and hand.
+	 */
+	this.onNewRound = function( ROUND , hand ) {
+		this.data = new AIData( hand );
+	}
+	
 	this.wantFlipNoTrump = function( ROUND ) {
 		return false;
 		if ( ROUND.roundData.starter == "?" ) {

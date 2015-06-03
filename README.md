@@ -47,7 +47,7 @@ In each round, some tricks will be played. The player who wins the trick will wi
 All 5s are worth 5 points, all 10s are worth 10 points, and all Ks are worth 10 points. If the attackers win any 5s, 10s, or Ks, the point values are added to their score. If the defenders win any 5s, 10s, or Ks, they simply prevent the attackers from obtaining those points. If a card is not a 5, 10, or K, it is worth 0 points and does not really matter with respect to the scoring system.
 
 ##Dealing
-Players take turns drawing cards one at a time in a counter-clockwise order. In every round, there will be a *leading defender* who will draw the first card. Once one hundred cards have been drawn, the dealing stops.
+Players take turns drawing cards one at a time in a counter-clockwise order. In every round, there will be a *leading defender* who will draw the first card. Once one hundred cards have been drawn, the dealing stops. The leading defender also gets to lead the first trick.
 
 ##Bottom
 The remaining eight cards not dealt are called the *bottom*. These cards are seen only by the leading defender. The leading defender may add these eight cards to his/her hand. S/he must then create his/her own bottom with any eight cards from his/her hand. The leading defender can put cards in the original bottom back into his/her modified bottom. After the leading defender has confirmed his/her selection of cards in the bottom, the cards are removed from play.
@@ -68,3 +68,11 @@ If you happen to come across a pair of dominant cards of one suit, you have the 
 The last trump-affecting event is a pair of jokers. If you obtain a pair of jokers (either both big or both small), you may show them to declare no-trump. This can be done even if someone has overridden the trump suit. If no-trump is played, then there is no trump suit and the only cards that may be used to trump are the dominant cards and jokers. You are welcome to show a pair of big jokers if a pair of small jokers have already been shown; however, once no-trump has been declared, the round cannot revert back to having a trump suit. 
 
 If there is no trump suit, then all dominant cards are of the same power. If there is a trump suit, then the dominant card of that trump suit becomes more powerful than dominant cards of a non-trump suit. This is the one catch that was mentioned in the first paragraph.
+
+##Starting the First Round
+An attentive reader may be wondering about the mechanics of the first round, as the defenders have not been determined. Typically, the game begins by selecting a random card from the deck and taking its remainder whend divided by 4 to determine who draws first. If the remainder is 1, the person who selected the card draws first. If it is 2, the person 1 spot counterclockwise from the person who selected the card draws first, and so on. For example, if the south player picks a random card, J (11), and takes its value modulo 4, s/he would get 3. This corresponds to the person two spots counterclockwise down, which would be the north player.
+
+Once the person who draws first has been determined, drawing begins. As players draw their cards, the first person to flip a dominant card becomes the lead defender. Although the declarer takes the risk that the suit is not an ideal trump suit, s/he will receive the bottom and begins with an advantage. If the declarer is overriden, either by a pair of dominant cards or by a pair of jokers, s/he loses the bottom and possibly the defending position (if the other team overrides) to whoever just overrode.
+
+##After the First Round
+If a defending team succeeds in defending, the lead defender title is transferred to the current lead defender's teammate. If a defending team loses, the lead defender title is transferred to the attacker who is directly counter-clockwise from the current lead defender.

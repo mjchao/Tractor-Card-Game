@@ -76,6 +76,11 @@ The last trump-affecting event is a pair of jokers. If you obtain a pair of joke
 
 If there is no trump suit, then all dominant cards are of the same power. If there is a trump suit, then the dominant card of that trump suit becomes more powerful than dominant cards of a non-trump suit. This is the one catch that was mentioned in the first paragraph.
 
+##Trumping and Over-Trumping a Dump
+If somebody dumps some cards, and multiple players wish to trump it, the rules of determining the winner are as follows: 1) If the dump contained a tractor(s), whomever plays some trumps with the highest tractor wins. 2) If the dump contained no tractors, but it contained pairs, whomever plays some trumps with the highest pair wins. 3) If the dump contained no tractors or pairs, it must contain single cards, and whomever plays some trumps with the higest single card wins. 
+
+For example, suppose somebody dumped 6-6-7-8-9-9 of a non-trump suit. Suppose player 1 trumps with 3-3-5-5-8 and player 2 trumps with 2-2-7-10-10. Player 2 wins the competition because his pair of 10s is the highest pair. It does not matter that his pair of 2s was lower than player 1's pair of 3s, or that player 2's 7 was lower than player 1's 8. Only the highest matters.
+
 ##Starting the First Round
 An attentive reader may be wondering about the mechanics of the first round, as the defenders have not been determined. Typically, the game begins by selecting a random card from the deck and taking its remainder whend divided by 4 to determine who draws first. If the remainder is 1, the person who selected the card draws first. If it is 2, the person 1 spot counterclockwise from the person who selected the card draws first, and so on. For example, if the south player picks a random card, J (11), and takes its value modulo 4, s/he would get 3. This corresponds to the person two spots counterclockwise down, which would be the north player.
 

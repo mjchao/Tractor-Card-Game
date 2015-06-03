@@ -129,7 +129,7 @@ function Dealer( north , south , east , west , bottom , start ) {
 	}
 	
 	this.finished = function() {
-		return this.deck.size() == 0;
+		return this.deck.size() == 84;
 	}
 	
 	this.reset( start );

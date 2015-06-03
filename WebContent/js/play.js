@@ -207,9 +207,6 @@ function addBottomToHand() {
 		round.roundData.starter = round.roundData.lastDeclarer;
 		round.starter = round.roundData.starter;
 	}
-	else {
-		console.log( round.roundData.starter );
-	}
 	updateRoundStats();
 	
 	var hand;
@@ -545,7 +542,6 @@ function beginPlay() {
 	document.getElementById( "cmdNextTrick" ).setAttribute( 
 												"class" , "commandDisabled" );
 	var starter = round.roundData.starter;
-	console.log( starter );
 	if ( starter == "N" ) {
 		currIdx = 2;
 	}
@@ -558,6 +554,7 @@ function beginPlay() {
 	else if ( starter == "W" ) {
 		currIdx = 1;
 	}
+	console.log( starter );
 	play();
 }
 
@@ -622,7 +619,6 @@ function scoreTrick() {
 	}
 	
 	if ( defenders.indexOf( trick.determineWinner() ) == -1 ) {
-		console.log( defenders );
 		var trickPoints = trick.countPoints();
 		round.roundData.points += trickPoints;
 		document.getElementById( "txtPoints" ).innerHTML = "Points: " + 
@@ -796,6 +792,7 @@ function startNextRound() {
 			}
 		}
 		
+		trick = undefined;
 		document.getElementById( "pnlCenter" ).innerHTML = "";
 		updateRoundStats();
 		resetCommandPanels();

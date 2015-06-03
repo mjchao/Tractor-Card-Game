@@ -35,7 +35,7 @@ As it's name implies, a single consists of 1 card of any suit.
 For each trick, you must always follow the combination type and suit. For example, if the leader of the trick plays a pair of spades, you must play a pair of spades if possible. If you cannot follow the combination, you must follow the suit if possible. If you cannot follow the suit, you may play any cards you wish - you do not have to follow the combination type if you cannot follow the suit.
 
 ##Card Rankings
-Within an individual suit, the rank of the cards from highest to lowest is A-K-Q-J-10-9-8-7-6-5-4-3-2. As beat everything else, Ks beat everything but As, etc. 
+Within an individual suit, the rank of the cards from highest to lowest is A-K-Q-J-10-9-8-7-6-5-4-3-2. As beat everything else, Ks beat everything but As, etc. If two cards of the same suit and value are played, the one played first wins.
 
 ##Dumping
 If at any time you are certain that some set of cards you have when broken into individual combinations cannot be beaten by any other hand, you may *dump* all of them at once. For example, if you have A-K-K of spades, you can dump them because A is the highest single card in its suit, and K-K is the highest possible pair (since you already have one of the As, you know there cannot be a pair of As in another hand). Therefore, you may dump these three cards.

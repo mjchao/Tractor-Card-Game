@@ -1,9 +1,16 @@
 # Tractor (Card Game)
 
+Comments
+===
+
+This is a fun experiment with Javascript, HTML and CSS. Most of the code ended up being Javascript and only a little bit is HTML and CSS. The program was built bottom-up, and I did not find any major design issues during integration. The most difficult aspect was writing the code to enforce the rules of dumping cards in tractor. There were a lot of unusual cases, and subtle bugs escaped unit testing into system testing. Luckily though, the algorithms turned out well-designed and logically-written.
+
+In its current stage, all that remains to do is create an AI capable of playing the game. Currently, it only handles tricks with 1 card by selecting a random card of the correct suit to play. Ideally, it would be able to handle all kinds of tricks and play intelligently. Since I will be taking a course in artificial intelligence next semester (Fall 2015), I may return to this project then.
+
 Background
 ===
 
-This card game is not too well known around the world. It is mainly played in China. The Chinese name for this game literaly translates to "Tractor", hence its name.
+This card game is not too well known around the world. It is mainly played in China. The Chinese name for this game literaly translates to "Tractor."
 
 Tractor is played with two standard decks of cards with jokers. There are two teams of two people: north-south and east-west. There are thirteen *levels* corresponding to the thirteen card values: 2, 3, ... 10, J, Q, K, A. Both teams start at level 2 and want to be the first team to successfully pass level A. The team that finishes level A first wins.
 

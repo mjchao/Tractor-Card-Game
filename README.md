@@ -5,7 +5,7 @@ Comments
 
 This is a fun experiment with Javascript, HTML and CSS. Most of the code ended up being Javascript and only a little bit is HTML and CSS. The program was built bottom-up, and I did not find any major design issues during integration. The most difficult aspect was writing the code to enforce the rules of dumping cards in tractor. There were a lot of unusual cases, and subtle bugs escaped unit testing into system testing. Luckily though, the algorithms turned out well-designed and logically-written.
 
-In its current stage, all that remains to do is create an AI capable of playing the game. Currently, it only handles tricks with 1 card by selecting a random card of the correct suit to play. Ideally, it would be able to handle all kinds of tricks and play intelligently. Since I will be taking a course in artificial intelligence next semester (Fall 2015), I may return to this project then.
+In its current stage, all that remains to do is to fix a display bug and create an AI capable of playing the game. Currently, it only handles tricks with 1 card by selecting a random card of the correct suit to play. Ideally, it would be able to handle all kinds of tricks and play intelligently. Since I will be taking a course in artificial intelligence next semester (Fall 2015), I may return to this project then.
 
 Background
 ===

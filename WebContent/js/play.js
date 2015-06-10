@@ -807,8 +807,40 @@ function updateRoundStats() {
 	document.getElementById( "txtSouth" ).setAttribute( "class" , "" );
 	document.getElementById( "txtEast" ).setAttribute( "class" , "" );
 	document.getElementById( "txtWest" ).setAttribute( "class" , "" );
-	document.getElementById( "lvlNS" ).innerHTML = nsLevel;
-	document.getElementById( "lvlEW" ).innerHTML = ewLevel;
+	
+	nsLevel = nsLevel % 13;
+	if ( 2 <= nsLevel && nsLevel <= 10 ) {
+		document.getElementById( "lvlNS" ).innerHTML = nsLevel;
+	}
+	else if ( nsLevel == 11 ) {
+		document.getElementById( "lvlNS" ).innerHTML = "J";
+	}
+	else if ( nsLevel == 12 ) {
+		document.getElementById( "lvlNS" ).innerHTML = "Q";
+	}
+	else if ( nsLevel == 13 ) {
+		document.getElementById( "lvlNS" ).innerHTML = "K";
+	}
+	else if ( nsLevel == 1 ) {
+		document.getElementById( "lvlNS" ).innerHTML = "A";
+	}
+	
+	ewLevel = ewLevel % 13;
+	if ( ewLevel <= 10 ) {
+		document.getElementById( "lvlEW" ).innerHTML = ewLevel;
+	}
+	else if ( ewLevel == 11 ) {
+		document.getElementById( "lvlEW" ).innerHTML = "J";
+	}
+	else if ( ewLevel == 12 ) {
+		document.getElementById( "lvlEW" ).innerHTML = "Q";
+	}
+	else if ( ewLevel == 13 ) {
+		document.getElementById( "lvlEW" ).innerHTML = "K";
+	}
+	else if ( ewLevel == 1 ) {
+		document.getElementById( "lvlEW" ).innerHTML = "A";
+	}
 	document.getElementById( "txtPoints" ).innerHTML = "Points: 0";
 	var defenders = "??";
 	if ( round.starter == "N" || round.starter == "S" ) {

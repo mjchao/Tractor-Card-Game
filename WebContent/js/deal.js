@@ -7,15 +7,19 @@
  * @param east the hand belonging to the east player
  * @param west the hand belonging to the west player
  * @param start the person who should receive the first card, "N", "S", "E", or
+ * @param level the level of the round
  * "W"
  */
-function Dealer( north , south , east , west , bottom , start ) {
+function Dealer( north , south , east , west , bottom , start , level ) {
 	this.north = north;
 	this.south = south;
 	this.east = east;
 	this.west = west;
 	this.bottom = bottom;
-	this.level = 2;
+	this.level = level;
+	if ( level == undefined ) {
+		throw "FUCK";
+	}
 	
 	this.getNorth = function() {
 		return this.north;
@@ -84,7 +88,6 @@ function Dealer( north , south , east , west , bottom , start ) {
 	 * @param start the player to receive the first card
 	 */
 	this.reset = function( start ) {
-		this.level = 2;
 		this.resetDeck( start );
 	}
 	
@@ -129,7 +132,7 @@ function Dealer( north , south , east , west , bottom , start ) {
 	}
 	
 	this.finished = function() {
-		return this.deck.size() == 84;
+		return this.deck.size() == 0;
 	}
 	
 	this.reset( start );

@@ -160,12 +160,14 @@ function Round( level , starter ) {
 	if ( starter == "?" ) {
 		var randomFirstDrawer = getFirstRoundFirstDrawer();
 		this.dealer = new Dealer( this.handN , this.handS , 
-				this.handE , this.handW , this.bottom , randomFirstDrawer );
+				this.handE , this.handW , this.bottom , randomFirstDrawer , 
+														this.roundData.level );
 		this.dealer.reset( randomFirstDrawer );
 	}
 	else {
 		this.dealer = new Dealer( this.handN , this.handS , 
-							this.handE , this.handW , this.bottom , starter );
+				this.handE , this.handW , this.bottom , starter , 
+											this.roundData.level );
 		this.dealer.reset( starter );
 	}
 	

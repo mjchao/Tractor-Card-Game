@@ -476,7 +476,7 @@ function Hand( verticalCards , visible ) {
 	
 	this.renderDealingOffsets = function( level ) {
 		this.updateCardLayouts();
-		this.hand.sort( (new CardComparatorForHands( 2 )).compare );
+		this.hand.sort( (new CardComparatorForHands( level )).compare );
 		this.renderOffsets( level , true );
 		this.updateZIndices();
 	}

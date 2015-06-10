@@ -1,5 +1,9 @@
 # Tractor (Card Game)
 
+Running the Application
+===
+To run this application, you can download the entire project as a zip using the Github website. Then, load game.html in Chrome. This majority of this application has been tested in Chrome v. 42.0.2311.135 m. Much of it has also been tested in Internet Explorer and Firefox, but I have not yet had the time to test this extensively in browsers other than Chrome. 
+
 Comments
 ===
 

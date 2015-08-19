@@ -42,7 +42,7 @@ For each trick, you must always follow the combination type and suit. For exampl
 Within an individual suit, the rank of the cards from highest to lowest is A-K-Q-J-10-9-8-7-6-5-4-3-2. As beat everything else, Ks beat everything but As, etc. If two cards of the same suit and value are played, the one played first wins.
 
 ##Dumping
-If at any time you are certain that some set of cards you have when broken into individual combinations cannot be beaten by any other hand, you may *dump* all of them at once. For example, if you have A-K-K of spades, you can dump them because A is the highest single card in its suit, and K-K is the highest possible pair (since you already have one of the As, you know there cannot be a pair of As in another hand). Therefore, you may dump these three cards.
+If you are first person to play during a trick and you are certain that some set of cards you have when broken into individual combinations cannot be beaten by any other hand, you may *dump* all of them at once. For example, if you have A-K-K of spades, you can dump them because A is the highest single card in its suit, and K-K is the highest possible pair (since you already have one of the As, you know there cannot be a pair of As in another hand). Therefore, you may dump these three cards.
 
 If your estimations are incorrect and your dump is invalid (i.e. your cards can be beaten), then you must play the smallest combination that can be beaten as a penalty. For example, if you attempt to dump A-Q-Q, but somebody has a pair of Ks, then you will be required to play the pair of Qs. As another example, if you attempt to dump 2-2-3 of spades and another hand has 4-4-5 of spades, you will be required to play the 3 of spades, as single cards are the weakest combination.
 

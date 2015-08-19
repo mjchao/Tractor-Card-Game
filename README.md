@@ -21,7 +21,7 @@ Tractor is played with two standard decks of cards with jokers. There are two te
 Rules
 ===
 
-For now, please see http://en.wikipedia.org/wiki/Sheng_Ji . (The Readme be updated when I get a chance.)
+For a beginner, Tractor can be a very complicated game with many rules. The following sections attempt to explain all the rules in a logical progression.
 
 ##Card Combinations
 There are three main card combinations: tractor, pair, and single.
